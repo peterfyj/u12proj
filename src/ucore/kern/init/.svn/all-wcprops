@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/init
+END
+entry.S
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/init/entry.S
+END
+init.c
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/init/init.c
+END

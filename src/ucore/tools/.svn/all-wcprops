@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/tools
+END
+gdbinit
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/tools/gdbinit
+END
+sign.c
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/tools/sign.c
+END
+vector.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/tools/vector.c
+END
+mksfs.c
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/tools/mksfs.c
+END
+function.mk
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/tools/function.mk
+END
+grade.sh
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/tools/grade.sh
+END
+user.ld
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/tools/user.ld
+END
+kernel.ld
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/tools/kernel.ld
+END

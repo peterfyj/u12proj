@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/fs/vfs
+END
+vfsfile.c
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/fs/vfs/vfsfile.c
+END
+inode.c
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/fs/vfs/inode.c
+END
+vfs.c
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/fs/vfs/vfs.c
+END
+inode.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/fs/vfs/inode.h
+END
+vfs.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/fs/vfs/vfs.h
+END
+vfslookup.c
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/fs/vfs/vfslookup.c
+END
+vfspath.c
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/fs/vfs/vfspath.c
+END
+vfsdev.c
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/fs/vfs/vfsdev.c
+END

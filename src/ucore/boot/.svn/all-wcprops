@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/boot
+END
+bootasm.S
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/boot/bootasm.S
+END
+asm.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/boot/asm.h
+END
+bootmain.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/boot/bootmain.c
+END

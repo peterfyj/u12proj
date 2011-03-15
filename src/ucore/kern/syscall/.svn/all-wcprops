@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/syscall
+END
+syscall.h
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/syscall/syscall.h
+END
+syscall.c
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/syscall/syscall.c
+END

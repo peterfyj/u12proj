@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/disk0/testman
+END
+ld
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/disk0/testman/ld
+END
+cpp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/disk0/testman/cpp
+END
+awk
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/disk0/testman/awk
+END
+zsh
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/disk0/testman/zsh
+END
+sed
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/disk0/testman/sed
+END
+gcc
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/disk0/testman/gcc
+END
+gdb
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/disk0/testman/gdb
+END

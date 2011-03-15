@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/disk0/testman/coreutils
+END
+mv
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/disk0/testman/coreutils/mv
+END
+cp
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/disk0/testman/coreutils/cp
+END
+cat
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/disk0/testman/coreutils/cat
+END
+ls
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/disk0/testman/coreutils/ls
+END
+rm
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/disk0/testman/coreutils/rm
+END

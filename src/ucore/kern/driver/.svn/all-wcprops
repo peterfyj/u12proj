@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/driver
+END
+clock.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/driver/clock.h
+END
+intr.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/driver/intr.h
+END
+ide.c
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/driver/ide.c
+END
+console.c
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/driver/console.c
+END
+kbdreg.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/driver/kbdreg.h
+END
+ide.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/driver/ide.h
+END
+console.h
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/driver/console.h
+END
+picirq.c
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/driver/picirq.c
+END
+clock.c
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/driver/clock.c
+END
+picirq.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/driver/picirq.h
+END
+intr.c
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/283/trunk/i386/lab6_filesystem/proj19/kern/driver/intr.c
+END
