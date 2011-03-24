@@ -32,6 +32,8 @@ GOFILES_linux=\
 
 GOFILES_windows=\
 	exec_windows.go
+	
+GOFILES_ucore=
 
 OFILES=\
 	asm_$(GOOS)_$(GOARCH).$O\

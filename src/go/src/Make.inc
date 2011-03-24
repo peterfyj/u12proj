@@ -35,6 +35,7 @@ GOOS_LIST=\
 	linux\
 	plan9\
 	windows\
+	ucore\
 
 GOARCH_LIST=\
 	386\
