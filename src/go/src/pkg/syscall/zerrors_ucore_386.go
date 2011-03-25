@@ -57,4 +57,4 @@ var errors = [...]string{
 	22:  "Too Many Files are Open",
 	23:  "File/Directory Already Exists",
 	24:  "Directory is Not Empty",
-)
+}
