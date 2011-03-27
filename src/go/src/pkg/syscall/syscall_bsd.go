@@ -27,8 +27,8 @@ func Getwd() (string, int) { return "", ENOTSUP }
  * Wrapped
  */
 
-//sys	getgroups(ngid int, gid *_Gid_t) (n int, errno int)
-//sys	setgroups(ngid int, gid *_Gid_t) (errno int)
+//sysnb	getgroups(ngid int, gid *_Gid_t) (n int, errno int)
+//sysnb	setgroups(ngid int, gid *_Gid_t) (errno int)
 
 func Getgroups() (gids []int, errno int) {
 	n, err := getgroups(0, nil)
@@ -130,7 +130,7 @@ func Wait4(pid int, wstatus *WaitStatus, options int, rusage *Rusage) (wpid int,
 	return
 }
 
-//sys	pipe() (r int, w int, errno int)
+//sysnb	pipe() (r int, w int, errno int)
 
 func Pipe(p []int) (errno int) {
 	if len(p) != 2 {
@@ -148,10 +148,11 @@ func Sleep(ns int64) (errno int) {
 //sys	accept(s int, rsa *RawSockaddrAny, addrlen *_Socklen) (fd int, errno int)
 //sys	bind(s int, addr uintptr, addrlen _Socklen) (errno int)
 //sys	connect(s int, addr uintptr, addrlen _Socklen) (errno int)
-//sys	socket(domain int, typ int, proto int) (fd int, errno int)
+//sysnb	socket(domain int, typ int, proto int) (fd int, errno int)
+//sys	getsockopt(s int, level int, name int, val uintptr, vallen *_Socklen) (errno int)
 //sys	setsockopt(s int, level int, name int, val uintptr, vallen int) (errno int)
-//sys	getpeername(fd int, rsa *RawSockaddrAny, addrlen *_Socklen) (errno int)
-//sys	getsockname(fd int, rsa *RawSockaddrAny, addrlen *_Socklen) (errno int)
+//sysnb	getpeername(fd int, rsa *RawSockaddrAny, addrlen *_Socklen) (errno int)
+//sysnb	getsockname(fd int, rsa *RawSockaddrAny, addrlen *_Socklen) (errno int)
 //sys	Shutdown(s int, how int) (errno int)
 
 // For testing: clients can set this flag to force
@@ -355,11 +356,18 @@ func Socket(domain, typ, proto int) (fd, errno int) {
 	return
 }
 
-//sys socketpair(domain int, typ int, proto int, fd *[2]int) (errno int)
+//sysnb socketpair(domain int, typ int, proto int, fd *[2]int) (errno int)
 
 func Socketpair(domain, typ, proto int) (fd [2]int, errno int) {
 	errno = socketpair(domain, typ, proto, &fd)
 	return
+}
+
+func GetsockoptInt(fd, level, opt int) (value, errno int) {
+	var n int32
+	vallen := _Socklen(4)
+	errno = getsockopt(fd, level, opt, uintptr(unsafe.Pointer(&n)), &vallen)
+	return int(n), errno
 }
 
 func SetsockoptInt(fd, level, opt int, value int) (errno int) {
@@ -552,7 +560,6 @@ func Sendmsg(fd int, p, oob []byte, to Sockaddr, flags int) (errno int) {
 // TODO: wrap
 //	Acct(name nil-string) (errno int)
 //	Gethostuuid(uuid *byte, timeout *Timespec) (errno int)
-//	Getsockopt(s int, level int, name int, val *byte, vallen *int) (errno int)
 //	Madvise(addr *byte, len int, behav int) (errno int)
 //	Mprotect(addr *byte, len int, prot int) (errno int)
 //	Msync(addr *byte, len int, flags int) (errno int)

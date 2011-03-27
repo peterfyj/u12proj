@@ -1,0 +1,2 @@
+The src/ folder is used as a patch to cover go/src/,
+once patched, the go is able to compile with GOOS=ucore.
