@@ -229,7 +229,7 @@ type Msghdr struct {
 	Name         *byte
 	Namelen      uint32
 	Pad_godefs_0 [4]byte
-	Iov          uint64
+	Iov          *Iovec
 	Iovlen       int32
 	Pad_godefs_1 [4]byte
 	Control      *byte
