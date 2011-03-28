@@ -4,12 +4,12 @@
 
 #include "runtime.h"
 
-extern void runtime·write(int32 fd, void *v, int32 len, int32 cap);	// slice, spelled out
+extern void write(int32 fd, void *v, int32 len, int32 cap);	// slice, spelled out
 
 int32
 runtime·write(int32 fd, void *v, int32 len)
 {
-	runtime·write(fd, v, len, len);
+	write(fd, v, len, len);
 	return len;
 }
 
