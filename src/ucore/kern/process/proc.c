@@ -1097,6 +1097,15 @@ out_unlock:
 	return ret;
 }
 
+int
+do_modify_ldt(int func, void* ptr, uint32 bytecount)
+{
+	/* TODO:
+	func=0: copy min{bytecount, sizeof usr_gdt} bytes of user gdt to ptr;
+	func=1: set user gdt to *ptr, bytecount must equal the size of the structure;
+	*/
+}
+
 static int
 kernel_execve(const char *name, const char **argv) {
 	int argc = 0, ret;

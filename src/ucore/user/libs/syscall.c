@@ -34,6 +34,12 @@ syscall(int num, ...) {
 	return ret;
 }
 
+int sys_modify_ldt(int func, void* ptr, uint32 bytecount)
+{
+	return syscall(SYS_modify_ldt, func, ptr, bytecount);
+}
+
+
 int
 sys_exit(int error_code) {
 	return syscall(SYS_exit, error_code);

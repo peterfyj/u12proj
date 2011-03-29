@@ -13,6 +13,15 @@
 #include <sysfile.h>
 
 static int
+sys_modify_ldt(uint32_t arg[])
+{
+	int func = (int)arg[0];
+	void* ptr = (void*)arg[1];
+	uint32 bytecount = (uint32)arg[2];
+	return do_modify_ldt(func, ptr, bytecount);
+}
+
+static int
 sys_exit(uint32_t arg[]) {
 	int error_code = (int)arg[0];
 	return do_exit(error_code);
