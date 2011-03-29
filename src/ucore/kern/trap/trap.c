@@ -159,7 +159,7 @@ trap_dispatch(struct trapframe *tf) {
 	char c;
 
 	int ret;
-
+	
 	switch (tf->tf_trapno) {
 	case T_DEBUG:
 	case T_BRKPT:
@@ -181,6 +181,9 @@ trap_dispatch(struct trapframe *tf) {
 		}
 		break;
 	case T_SYSCALL:
+		if (tf->tf_regs.reg_eax != SYS_write && 
+			tf->tf_regs.reg_eax != SYS_read)
+			cprintf("Syscall [%d] detected!\n", tf->tf_regs.reg_eax);
 		syscall();
 		break;
 	case IRQ_OFFSET + IRQ_TIMER:
@@ -205,7 +208,7 @@ trap_dispatch(struct trapframe *tf) {
 	default:
 		print_trapframe(tf);
 		if (current != NULL) {
-			cprintf("unhandled trap.\n");
+			cprintf("unhandled trap [%d].\n", tf->tf_trapno);
 			do_exit(-E_KILLED);
 		}
 		panic("unexpected trap in kernel.\n");
