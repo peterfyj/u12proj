@@ -17,7 +17,7 @@ sys_modify_ldt(uint32_t arg[])
 {
 	int func = (int)arg[0];
 	void* ptr = (void*)arg[1];
-	uint32 bytecount = (uint32)arg[2];
+	uint32_t bytecount = (uint32_t)arg[2];
 	return do_modify_ldt(func, ptr, bytecount);
 }
 
@@ -374,6 +374,7 @@ static int (*syscalls[])(uint32_t arg[]) = {
 	[SYS_dup]				sys_dup,
 	[SYS_pipe]				sys_pipe,
 	[SYS_mkfifo]			sys_mkfifo,
+	[SYS_modify_ldt]		sys_modify_ldt,
 };
 
 #define NUM_SYSCALLS		((sizeof(syscalls)) / (sizeof(syscalls[0])))

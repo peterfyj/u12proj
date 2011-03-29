@@ -34,7 +34,7 @@ syscall(int num, ...) {
 	return ret;
 }
 
-int sys_modify_ldt(int func, void* ptr, uint32 bytecount)
+int sys_modify_ldt(int func, void* ptr, uint32_t bytecount)
 {
 	return syscall(SYS_modify_ldt, func, ptr, bytecount);
 }

@@ -105,6 +105,7 @@ int do_sleep(unsigned int time);
 int do_mmap(uintptr_t *addr_store, size_t len, uint32_t mmap_flags);
 int do_munmap(uintptr_t addr, size_t len);
 int do_shmem(uintptr_t *addr_store, size_t len, uint32_t mmap_flags);
+int do_modify_ldt(int func, void* ptr, uint32_t bytecount);
 
 #endif /* !__KERN_PROCESS_PROC_H__ */
 

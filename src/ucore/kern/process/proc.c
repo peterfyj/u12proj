@@ -1098,7 +1098,7 @@ out_unlock:
 }
 
 int
-do_modify_ldt(int func, void* ptr, uint32 bytecount)
+do_modify_ldt(int func, void* ptr, uint32_t bytecount)
 {
 	/* TODO:
 	func=0: copy min{bytecount, sizeof usr_gdt} bytes of user gdt to ptr;
