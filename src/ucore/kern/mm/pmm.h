@@ -17,6 +17,19 @@ struct pmm_manager {
 	void (*check)(void);
 };
 
+struct user_desc {
+	unsigned int  entry_number;
+	unsigned long base_addr;
+	unsigned int  limit;
+	unsigned int  seg_32bit:1;
+	unsigned int  contents:2;
+	unsigned int  read_exec_only:1;
+	unsigned int  limit_in_pages:1;
+	unsigned int  seg_not_present:1;
+	unsigned int  useable:1;
+};
+typedef struct user_desc user_desc;
+
 extern const struct pmm_manager *pmm_manager;
 extern pde_t *boot_pgdir;
 extern uintptr_t boot_cr3;
@@ -35,6 +48,7 @@ struct Page *get_page(pde_t *pgdir, uintptr_t la, pte_t **ptep_store);
 void page_remove(pde_t *pgdir, uintptr_t la);
 int page_insert(pde_t *pgdir, struct Page *page, uintptr_t la, uint32_t perm);
 
+void set_ldt(user_desc* p, uint32_t bytecount);
 void load_esp0(uintptr_t esp0);
 void tlb_invalidate(pde_t *pgdir, uintptr_t la);
 struct Page *pgdir_alloc_page(pde_t *pgdir, uintptr_t la, uint32_t perm);

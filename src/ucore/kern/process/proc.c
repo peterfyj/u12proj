@@ -1100,6 +1100,19 @@ out_unlock:
 int
 do_modify_ldt(int func, void* ptr, uint32_t bytecount)
 {
+	user_desc* p = (user_desc*)ptr;
+	switch (func) 
+	{
+		case 0:
+			break;
+		case 1:
+			cprintf("------entry:%d\n", p->entry_number);
+			cprintf("------base:0x%08x\n", p->base_addr);
+			cprintf("------limit:0x%08x\n", p->limit);
+			set_ldt(p, bytecount);
+			break;
+	}
+	return 0;
 	/* TODO:
 	func=0: copy min{bytecount, sizeof usr_gdt} bytes of user gdt to ptr;
 	func=1: set user gdt to *ptr, bytecount must equal the size of the structure;

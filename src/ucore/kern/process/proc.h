@@ -37,6 +37,7 @@ extern list_entry_t proc_mm_list;
 struct inode;
 struct fs_struct;
 
+
 struct proc_struct {
 	enum proc_state state;
 	int pid;

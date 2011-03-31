@@ -136,6 +136,11 @@ gdt_init(void) {
 	ltr(GD_TSS);
 }
 
+void set_ldt(user_desc* p, uint32_t bytecount)
+{
+	gdt[SEG_UDATA] = SEG(STA_W, p->base_addr, p->limit, DPL_USER);
+}
+
 static void
 init_pmm_manager(void) {
 	pmm_manager = &buddy_pmm_manager;
