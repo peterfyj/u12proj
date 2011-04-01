@@ -1109,6 +1109,7 @@ do_modify_ldt(int func, void* ptr, uint32_t bytecount)
 			cprintf("------entry:%d\n", p->entry_number);
 			cprintf("------base:0x%08x\n", p->base_addr);
 			cprintf("------limit:0x%08x\n", p->limit);
+			cprintf("------bytecount:0x%08x\n", bytecount);
 			set_ldt(p, bytecount);
 			break;
 	}

@@ -680,6 +680,7 @@ do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr) {
 	int ret = -E_INVAL;
 	struct vma_struct *vma = find_vma(mm, addr);
 	if (vma == NULL || vma->vm_start > addr) {
+		cprintf("vma 0x%08x error!\n", vma);
 		goto failed;
 	}
 	if (vma->vm_flags & VM_STACK) {

@@ -82,6 +82,8 @@ static struct segdesc gdt[] = {
 	[SEG_UTEXT] = SEG(STA_X | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
 	[SEG_UDATA] = SEG(STA_W, 0x0, 0xFFFFFFFF, DPL_USER),
 	[SEG_TSS]	= NULL_SEG,
+	[SEG_GOTEXT]= SEG(STA_X | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
+	[SEG_GODATA]= SEG(STA_W, 0x0, 0xFFFFFFFF, DPL_USER),
 };
 
 static struct pseudodesc gdt_pd = {
@@ -138,7 +140,8 @@ gdt_init(void) {
 
 void set_ldt(user_desc* p, uint32_t bytecount)
 {
-	gdt[SEG_UDATA] = SEG(STA_W, p->base_addr, p->limit, DPL_USER);
+	gdt[p->entry_number] = SEG(STA_W | STA_R, p->base_addr, p->limit, DPL_USER);
+	asm volatile ("lgdt (%0)" :: "r" (&gdt_pd));
 }
 
 static void

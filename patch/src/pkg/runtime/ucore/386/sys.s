@@ -272,21 +272,16 @@ TEXT runtime·setldt(SB),7,$32
 	MOVL	$(SEG_32BIT|LIMIT_IN_PAGES|USEABLE|CONTENTS_DATA), 12(AX)	// flag bits
 
 	// call modify_ldt
-	MOVL	$1, BX	// func = 1 (write)
+	MOVL	$1, DX	// func = 1 (write)
 	MOVL	AX, CX	// user_desc
-	MOVL	$16, DX	// sizeof(user_desc)
-	MOVL	$123, AX	// syscall - modify_ldt
+	MOVL	$16, BX	// sizeof(user_desc)
+	MOVL	$147, AX	// syscall - modify_ldt
 	INT	$0x80
-
-	// breakpoint on error
-	CMPL AX, $0xfffff001
-	JLS 2(PC)
-	INT $3
 
 	// compute segment selector - (entry*8+7)
 	MOVL	entry+0(FP), AX
 	SHLL	$3, AX
-	ADDL	$7, AX
+	ADDL	$3, AX
 	MOVW	AX, GS
 
 	RET

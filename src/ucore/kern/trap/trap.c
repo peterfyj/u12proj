@@ -175,17 +175,15 @@ trap_dispatch(struct trapframe *tf) {
 				if (trap_in_kernel(tf)) {
 					panic("handle pgfault failed in kernel mode. %e\n", ret);
 				}
-				cprintf("killed by kernel(T_PGFLT).\n");	// MARK:PETER
+				cprintf("killed by kernel(T_PGFLT).\n");
 				do_exit(-E_KILLED);
 			}
 		}
 		break;
 	case T_SYSCALL:
-		// MARK:PETER start
 		if (tf->tf_regs.reg_eax != SYS_write && 
 			tf->tf_regs.reg_eax != SYS_read)
 			cprintf("Syscall [%d] detected!\n", tf->tf_regs.reg_eax);
-		// MARK:PETER end
 		syscall();
 		break;
 	case IRQ_OFFSET + IRQ_TIMER:

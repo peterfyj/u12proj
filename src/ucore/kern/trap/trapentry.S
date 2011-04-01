@@ -20,7 +20,7 @@ __alltraps:
 
 	# call trap(tf), where tf=%esp
 	call trap
-
+	
 	# pop the pushed stack pointer
 	popl %esp
 
@@ -29,13 +29,14 @@ __alltraps:
 __trapret:
 	# restore registers from stack
 	popal
-
+	
 	# restore %ds and %es
 	popl %es
 	popl %ds
 
 	# get rid of the trap number and error code
 	addl $0x8, %esp
+	
 	iret
 
 .globl forkrets
