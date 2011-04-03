@@ -10,22 +10,22 @@
 
 static inline bool
 __intr_save(void) {
-	if (read_eflags() & FL_IF) {
-		intr_disable();
-		return 1;
-	}
-	return 0;
+    if (read_eflags() & FL_IF) {
+        intr_disable();
+        return 1;
+    }
+    return 0;
 }
 
 static inline void
 __intr_restore(bool flag) {
-	if (flag) {
-		intr_enable();
-	}
+    if (flag) {
+        intr_enable();
+    }
 }
 
-#define local_intr_save(x)		do { x = __intr_save(); } while (0)
-#define local_intr_restore(x)	__intr_restore(x);
+#define local_intr_save(x)      do { x = __intr_save(); } while (0)
+#define local_intr_restore(x)   __intr_restore(x);
 
 void sync_init(void);
 

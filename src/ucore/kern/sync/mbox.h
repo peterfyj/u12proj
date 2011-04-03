@@ -8,7 +8,7 @@ void mbox_init(void);
 struct mboxbuf;
 struct mboxinfo;
 
-int ipc_mbox_init(unsigned int max_bytes);
+int ipc_mbox_init(unsigned int max_slots);
 int ipc_mbox_send(int id, struct mboxbuf *buf, unsigned int timeout);
 int ipc_mbox_recv(int id, struct mboxbuf *buf, unsigned int timeout);
 int ipc_mbox_free(int id);

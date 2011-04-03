@@ -1,4 +1,4 @@
-gdb(1)				   GNU Tools				gdb(1)
+gdb(1)                 GNU Tools                gdb(1)
 
 
 
@@ -7,8 +7,8 @@ NAME
 
 SYNOPSIS
        gdb    [-help] [-nx] [-q] [-batch] [-cd=dir] [-f] [-b bps] [-tty=dev]
-	      [-s symfile] [-e prog] [-se prog] [-c core] [-x cmds] [-d dir]
-	      [prog[core|procID]]
+          [-s symfile] [-e prog] [-se prog] [-c core] [-x cmds] [-d dir]
+          [prog[core|procID]]
 
 DESCRIPTION
        The  purpose  of  a debugger such as GDB is to allow you to see what is
@@ -19,18 +19,18 @@ DESCRIPTION
        these) to help you catch bugs in the act:
 
 
-	  o   Start your program, specifying anything that  might  affect  its
-	      behavior.
+      o   Start your program, specifying anything that  might  affect  its
+          behavior.
 
 
-	  o   Make your program stop on specified conditions.
+      o   Make your program stop on specified conditions.
 
 
-	  o   Examine what has happened, when your program has stopped.
+      o   Examine what has happened, when your program has stopped.
 
 
-	  o   Change  things  in your program, so you can experiment with cor-
-	      recting the effects of one bug and go on to learn about another.
+      o   Change  things  in your program, so you can experiment with cor-
+          recting the effects of one bug and go on to learn about another.
 
 
        You  can  use  GDB  to  debug programs written in C, C++, and Modula-2.
@@ -66,35 +66,35 @@ DESCRIPTION
        Here are some of the most frequently needed GDB commands:
 
        break [file:]function
-	       Set a breakpoint at function (in file).
+           Set a breakpoint at function (in file).
 
        run [arglist]
-	      Start your program (with arglist, if specified).
+          Start your program (with arglist, if specified).
 
        bt     Backtrace: display the program stack.
 
        print expr
-	       Display the value of an expression.
+           Display the value of an expression.
 
-       c      Continue running your program (after stopping, e.g. at a	break-
-	      point).
+       c      Continue running your program (after stopping, e.g. at a  break-
+          point).
 
        next   Execute  next program line (after stopping); step over any func-
-	      tion calls in the line.
+          tion calls in the line.
 
        edit [file:]function
-	      look at the program line where it is presently stopped.
+          look at the program line where it is presently stopped.
 
        list [file:]function
-	      type the text of the program in the  vicinity  of  where	it  is
-	      presently stopped.
+          type the text of the program in the  vicinity  of  where  it  is
+          presently stopped.
 
        step   Execute  next program line (after stopping); step into any func-
-	      tion calls in the line.
+          tion calls in the line.
 
        help [name]
-	      Show information about GDB command name, or general  information
-	      about using GDB.
+          Show information about GDB command name, or general  information
+          about using GDB.
 
        quit   Exit from GDB.
 
@@ -108,9 +108,9 @@ OPTIONS
        associated option flag is equivalent to a `-se' option, and the second,
        if any, is equivalent to a `-c' option if it's  the  name  of  a  file.
        Many  options have both long and short forms; both are shown here.  The
-       long forms are also recognized if you truncate them, so long as	enough
-       of  the	option	is present to be unambiguous.  (If you prefer, you can
-       flag option arguments with `+' rather than `-',	though	we  illustrate
+       long forms are also recognized if you truncate them, so long as  enough
+       of  the  option  is present to be unambiguous.  (If you prefer, you can
+       flag option arguments with `+' rather than `-',  though  we  illustrate
        the more usual convention.)
 
        All  the  options  and command line arguments you give are processed in
@@ -126,7 +126,7 @@ OPTIONS
        -symbols=file
 
        -s file
-	       Read symbol table from file file.
+           Read symbol table from file file.
 
 
        -write Enable writing into executable and core files.
@@ -135,104 +135,104 @@ OPTIONS
        -exec=file
 
        -e file
-		Use file file as the executable file to execute when appropri-
-	      ate, and for examining pure data	in  conjunction  with  a  core
-	      dump.
+        Use file file as the executable file to execute when appropri-
+          ate, and for examining pure data  in  conjunction  with  a  core
+          dump.
 
 
        -se=file
-		Read  symbol table from file file and use it as the executable
-	      file.
+        Read  symbol table from file file and use it as the executable
+          file.
 
 
        -core=file
 
        -c file
-	       Use file file as a core dump to examine.
+           Use file file as a core dump to examine.
 
 
        -command=file
 
        -x file
-	       Execute GDB commands from file file.
+           Execute GDB commands from file file.
 
 
        -directory=directory
 
        -d directory
-	       Add directory to the path to search for source files.
+           Add directory to the path to search for source files.
 
 
 
        -nx
 
-       -n     Do not  execute  commands  from  any  `.gdbinit'	initialization
-	      files.  Normally, the commands in these files are executed after
-	      all the command options and arguments have been processed.
+       -n     Do not  execute  commands  from  any  `.gdbinit'  initialization
+          files.  Normally, the commands in these files are executed after
+          all the command options and arguments have been processed.
 
 
 
        -quiet
 
        -q     ``Quiet''.  Do not print the  introductory  and  copyright  mes-
-	      sages.  These messages are also suppressed in batch mode.
+          sages.  These messages are also suppressed in batch mode.
 
 
        -batch Run  in batch mode.  Exit with status 0 after processing all the
-	      command files specified with `-x' (and `.gdbinit', if not inhib-
-	      ited).  Exit with nonzero status if an error occurs in executing
-	      the GDB commands in the command files.
+          command files specified with `-x' (and `.gdbinit', if not inhib-
+          ited).  Exit with nonzero status if an error occurs in executing
+          the GDB commands in the command files.
 
-	      Batch mode may be useful for running GDB as a filter, for  exam-
-	      ple  to download and run a program on another computer; in order
-	      to make this more useful, the message
+          Batch mode may be useful for running GDB as a filter, for  exam-
+          ple  to download and run a program on another computer; in order
+          to make this more useful, the message
 
-	      Program exited normally.
+          Program exited normally.
 
 
-	      (which is ordinarily issued whenever a program running under GDB
-	      control terminates) is not issued when running in batch mode.
+          (which is ordinarily issued whenever a program running under GDB
+          control terminates) is not issued when running in batch mode.
 
 
        -cd=directory
-		Run  GDB  using directory as its working directory, instead of
-	      the current directory.
+        Run  GDB  using directory as its working directory, instead of
+          the current directory.
 
 
        -fullname
 
        -f     Emacs sets this option when it runs GDB  as  a  subprocess.   It
-	      tells  GDB  to  output  the  full file name and line number in a
-	      standard, recognizable fashion each time a stack frame  is  dis-
-	      played  (which includes each time the program stops).  This rec-
-	      ognizable format looks like two ` 32'  characters,  followed  by
-	      the  file  name, line number and character position separated by
-	      colons, and a newline.  The Emacs-to-GDB interface program  uses
-	      the  two ` 32' characters as a signal to display the source code
-	      for the frame.
+          tells  GDB  to  output  the  full file name and line number in a
+          standard, recognizable fashion each time a stack frame  is  dis-
+          played  (which includes each time the program stops).  This rec-
+          ognizable format looks like two ` 32'  characters,  followed  by
+          the  file  name, line number and character position separated by
+          colons, and a newline.  The Emacs-to-GDB interface program  uses
+          the  two ` 32' characters as a signal to display the source code
+          for the frame.
 
 
        -b bps  Set the line speed (baud rate or bits per second) of any serial
-	      interface used by GDB for remote debugging.
+          interface used by GDB for remote debugging.
 
 
        -tty=device
-		Run using device for your program's standard input and output.
+        Run using device for your program's standard input and output.
 
 
 
 SEE ALSO
-       `gdb' entry in info; Using GDB: A Guide to the GNU Source-Level	Debug-
+       `gdb' entry in info; Using GDB: A Guide to the GNU Source-Level  Debug-
        ger, Richard M. Stallman and Roland H. Pesch, July 1991.
 
-       Further	documentation  is  available  in /Developer/Documentation/Doc-
+       Further  documentation  is  available  in /Developer/Documentation/Doc-
        Sets/com.apple.ADC_Reference_Library.DeveloperTools.docset/Con-
        tents/Resources/Documents/documentation/DeveloperTools/gdb
 
 COPYING
        Copyright (c) 1991 Free Software Foundation, Inc.
 
-       Permission  is  granted	to make and distribute verbatim copies of this
+       Permission  is  granted  to make and distribute verbatim copies of this
        manual provided the copyright notice and  this  permission  notice  are
        preserved on all copies.
 
@@ -249,4 +249,4 @@ COPYING
 
 
 
-GNU Tools			   22may2002				gdb(1)
+GNU Tools              22may2002                gdb(1)

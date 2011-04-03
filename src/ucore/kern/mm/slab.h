@@ -3,7 +3,7 @@
 
 #include <types.h>
 
-#define KMALLOC_MAX_ORDER		10
+#define KMALLOC_MAX_ORDER       10
 
 void slab_init(void);
 

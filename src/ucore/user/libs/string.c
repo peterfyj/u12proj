@@ -3,11 +3,11 @@
 
 char *
 strdup(const char *src) {
-	char *dst;
-	size_t len = strlen(src) + 1;
-	if ((dst = malloc(len)) != NULL) {
-		memcpy(dst, src, len);
-	}
-	return dst;
+    char *dst;
+    size_t len = strlen(src) + 1;
+    if ((dst = malloc(len)) != NULL) {
+        memcpy(dst, src, len);
+    }
+    return dst;
 }
 

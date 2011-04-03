@@ -4,15 +4,15 @@
 #include <types.h>
 
 typedef struct rb_node {
-	bool red;							// if red = 0, it's a black node
-	struct rb_node *parent;
-	struct rb_node *left, *right;
+    bool red;                           // if red = 0, it's a black node
+    struct rb_node *parent;
+    struct rb_node *left, *right;
 } rb_node;
 
 typedef struct rb_tree {
-	// compare function should return -1 if *node1 < *node2, 1 if *node1 > *node2, and 0 otherwise
-	int (*compare)(rb_node *node1, rb_node *node2);
-	struct rb_node *nil, *root;
+    // compare function should return -1 if *node1 < *node2, 1 if *node1 > *node2, and 0 otherwise
+    int (*compare)(rb_node *node1, rb_node *node2);
+    struct rb_node *nil, *root;
 } rb_tree;
 
 rb_tree *rb_tree_create(int (*compare)(rb_node *node1, rb_node *node2));

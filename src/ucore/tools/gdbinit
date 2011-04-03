@@ -1,9 +1,3 @@
 file bin/kernel
 target remote :1234
-define hock-stop
-x/i $pc
-end
 break kern_init
-break do_modify_ldt
-break sys_modify_ldt
-continue

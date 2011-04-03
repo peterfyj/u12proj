@@ -3,6 +3,6 @@
 
 void
 sync_init(void) {
-	mbox_init();
+    mbox_init();
 }
 

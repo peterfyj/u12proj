@@ -11,8 +11,8 @@
  * */
 static void
 cputch(int c, int *cnt) {
-	cons_putc(c);
-	(*cnt) ++;
+    cons_putc(c);
+    (*cnt) ++;
 }
 
 /* *
@@ -26,9 +26,9 @@ cputch(int c, int *cnt) {
  * */
 int
 vcprintf(const char *fmt, va_list ap) {
-	int cnt = 0;
-	vprintfmt((void*)cputch, NO_FD, &cnt, fmt, ap);
-	return cnt;
+    int cnt = 0;
+    vprintfmt((void*)cputch, NO_FD, &cnt, fmt, ap);
+    return cnt;
 }
 
 /* *
@@ -39,18 +39,18 @@ vcprintf(const char *fmt, va_list ap) {
  * */
 int
 cprintf(const char *fmt, ...) {
-	va_list ap;
-	int cnt;
-	va_start(ap, fmt);
-	cnt = vcprintf(fmt, ap);
-	va_end(ap);
-	return cnt;
+    va_list ap;
+    int cnt;
+    va_start(ap, fmt);
+    cnt = vcprintf(fmt, ap);
+    va_end(ap);
+    return cnt;
 }
 
 /* cputchar - writes a single character to stdout */
 void
 cputchar(int c) {
-	cons_putc(c);
+    cons_putc(c);
 }
 
 /* *
@@ -59,21 +59,21 @@ cputchar(int c) {
  * */
 int
 cputs(const char *str) {
-	int cnt = 0;
-	char c;
-	while ((c = *str ++) != '\0') {
-		cputch(c, &cnt);
-	}
-	cputch('\n', &cnt);
-	return cnt;
+    int cnt = 0;
+    char c;
+    while ((c = *str ++) != '\0') {
+        cputch(c, &cnt);
+    }
+    cputch('\n', &cnt);
+    return cnt;
 }
 
 /* getchar - reads a single non-zero character from stdin */
 int
 getchar(void) {
-	int c;
-	while ((c = cons_getc()) == 0)
-		/* do nothing */;
-	return c;
+    int c;
+    while ((c = cons_getc()) == 0)
+        /* do nothing */;
+    return c;
 }
 

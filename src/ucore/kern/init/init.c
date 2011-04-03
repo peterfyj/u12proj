@@ -19,34 +19,34 @@ int kern_init(void) __attribute__((noreturn));
 
 int
 kern_init(void) {
-	extern char edata[], end[];
-	memset(edata, 0, end - edata);
+    extern char edata[], end[];
+    memset(edata, 0, end - edata);
 
-	cons_init();				// init the console
+    cons_init();                // init the console
 
-	const char *message = "(THU.CST) os is loading ...";
-	cprintf("%s\n\n", message);
+    const char *message = "(THU.CST) os is loading ...";
+    cprintf("%s\n\n", message);
 
-	print_kerninfo();
+    print_kerninfo();
 
-	debug_init();				// init debug registers
-	pmm_init();					// init physical memory management
+    debug_init();               // init debug registers
+    pmm_init();                 // init physical memory management
 
-	pic_init();					// init interrupt controller
-	idt_init();					// init interrupt descriptor table
+    pic_init();                 // init interrupt controller
+    idt_init();                 // init interrupt descriptor table
 
-	vmm_init();					// init virtual memory management
-	sched_init();				// init scheduler
-	proc_init();				// init process table
-	sync_init();				// init sync struct
+    vmm_init();                 // init virtual memory management
+    sched_init();               // init scheduler
+    proc_init();                // init process table
+    sync_init();                // init sync struct
 
-	ide_init();					// init ide devices
-	swap_init();				// init swap
-	fs_init();					// init fs
+    ide_init();                 // init ide devices
+    swap_init();                // init swap
+    fs_init();                  // init fs
 
-	clock_init();				// init clock interrupt
-	intr_enable();				// enable irq interrupt
+    clock_init();               // init clock interrupt
+    intr_enable();              // enable irq interrupt
 
-	cpu_idle();					// run idle process
+    cpu_idle();                 // run idle process
 }
 

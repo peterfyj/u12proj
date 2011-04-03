@@ -1,4 +1,4 @@
-ZSH(1)									ZSH(1)
+ZSH(1)                                  ZSH(1)
 
 
 
@@ -6,17 +6,17 @@ NAME
        zsh - the Z shell
 
 OVERVIEW
-       Because	zsh contains many features, the zsh manual has been split into
+       Because  zsh contains many features, the zsh manual has been split into
        a number of sections:
 
-       zsh	    Zsh overview (this section)
+       zsh      Zsh overview (this section)
        zshroadmap   Informal introduction to the manual
-       zshmisc	    Anything not fitting into the other sections
-       zshexpn	    Zsh command and parameter expansion
+       zshmisc      Anything not fitting into the other sections
+       zshexpn      Zsh command and parameter expansion
        zshparam     Zsh parameters
        zshoptions   Zsh options
        zshbuiltins  Zsh built-in functions
-       zshzle	    Zsh command line editing
+       zshzle       Zsh command line editing
        zshcompwid   Zsh completion widgets
        zshcompsys   Zsh completion system
        zshcompctl   Zsh completion control
@@ -24,7 +24,7 @@ OVERVIEW
        zshtcpsys    Zsh built-in TCP functions
        zshzftpsys   Zsh built-in FTP client
        zshcontrib   Additional zsh functions and utilities
-       zshall	    Meta-man page containing all of the above
+       zshall       Meta-man page containing all of the above
 
 DESCRIPTION
        Zsh is a UNIX command interpreter  (shell)  usable  as  an  interactive
@@ -37,75 +37,75 @@ DESCRIPTION
 AUTHOR
        Zsh  was  originally  written by Paul Falstad <pf@zsh.org>.  Zsh is now
        maintained by the members of the zsh-workers  mailing  list  <zsh-work-
-       ers@sunsite.dk>.   The  development  is	currently coordinated by Peter
+       ers@sunsite.dk>.   The  development  is  currently coordinated by Peter
        Stephenson <pws@zsh.org>.  The coordinator can be contacted at <coordi-
        nator@zsh.org>, but matters relating to the code should generally go to
        the mailing list.
 
 AVAILABILITY
-       Zsh is available from the following anonymous FTP sites.  These	mirror
+       Zsh is available from the following anonymous FTP sites.  These  mirror
        sites are kept frequently up to date.  The sites marked with (H) may be
        mirroring ftp.cs.elte.hu instead of the primary site.
 
        Primary site
-	      ftp://ftp.zsh.org/pub/zsh/
-	      http://www.zsh.org/pub/zsh/
+          ftp://ftp.zsh.org/pub/zsh/
+          http://www.zsh.org/pub/zsh/
 
        Australia
-	      ftp://ftp.zsh.org/pub/zsh/
-	      http://www.zsh.org/pub/zsh/
+          ftp://ftp.zsh.org/pub/zsh/
+          http://www.zsh.org/pub/zsh/
 
        Denmark
-	      ftp://sunsite.dk/pub/unix/shells/zsh/
+          ftp://sunsite.dk/pub/unix/shells/zsh/
 
        Finland
-	      ftp://ftp.funet.fi/pub/unix/shells/zsh/
+          ftp://ftp.funet.fi/pub/unix/shells/zsh/
 
        Germany
-	      ftp://ftp.fu-berlin.de/pub/unix/shells/zsh/  (H)
-	      ftp://ftp.gmd.de/packages/zsh/
-	      ftp://ftp.uni-trier.de/pub/unix/shell/zsh/
+          ftp://ftp.fu-berlin.de/pub/unix/shells/zsh/  (H)
+          ftp://ftp.gmd.de/packages/zsh/
+          ftp://ftp.uni-trier.de/pub/unix/shell/zsh/
 
        Hungary
-	      ftp://ftp.cs.elte.hu/pub/zsh/
-	      http://www.cs.elte.hu/pub/zsh/
-	      ftp://ftp.kfki.hu/pub/packages/zsh/
+          ftp://ftp.cs.elte.hu/pub/zsh/
+          http://www.cs.elte.hu/pub/zsh/
+          ftp://ftp.kfki.hu/pub/packages/zsh/
 
        Israel
-	      ftp://ftp.math.technion.ac.il/pub/zsh/
-	      http://www.math.technion.ac.il/pub/zsh/
+          ftp://ftp.math.technion.ac.il/pub/zsh/
+          http://www.math.technion.ac.il/pub/zsh/
 
        Japan
-	      ftp://ftp.win.ne.jp/pub/shell/zsh/
+          ftp://ftp.win.ne.jp/pub/shell/zsh/
 
        Korea
-	      ftp://linux.sarang.net/mirror/system/shell/zsh/
+          ftp://linux.sarang.net/mirror/system/shell/zsh/
 
        Netherlands
-	      ftp://ftp.demon.nl/pub/mirrors/zsh/
+          ftp://ftp.demon.nl/pub/mirrors/zsh/
 
        Norway
-	      ftp://ftp.uit.no/pub/unix/shells/zsh/
+          ftp://ftp.uit.no/pub/unix/shells/zsh/
 
        Poland
-	      ftp://sunsite.icm.edu.pl/pub/unix/shells/zsh/
+          ftp://sunsite.icm.edu.pl/pub/unix/shells/zsh/
 
        Romania
-	      ftp://ftp.roedu.net/pub/mirrors/ftp.zsh.org/pub/zsh/
-	      ftp://ftp.kappa.ro/pub/mirrors/ftp.zsh.org/pub/zsh/
+          ftp://ftp.roedu.net/pub/mirrors/ftp.zsh.org/pub/zsh/
+          ftp://ftp.kappa.ro/pub/mirrors/ftp.zsh.org/pub/zsh/
 
        Slovenia
-	      ftp://ftp.siol.net/mirrors/zsh/
+          ftp://ftp.siol.net/mirrors/zsh/
 
        Sweden
-	      ftp://ftp.lysator.liu.se/pub/unix/zsh/
+          ftp://ftp.lysator.liu.se/pub/unix/zsh/
 
        UK
-	      ftp://ftp.net.lut.ac.uk/zsh/
-	      ftp://sunsite.org.uk/packages/zsh/
+          ftp://ftp.net.lut.ac.uk/zsh/
+          ftp://sunsite.org.uk/packages/zsh/
 
        USA
-	      http://zsh.open-mirror.com/
+          http://zsh.open-mirror.com/
 
        The up-to-date source code is available via anonymous CVS from  Source-
        forge.  See http://sourceforge.net/projects/zsh/ for details.
@@ -115,14 +115,14 @@ MAILING LISTS
        Zsh has 3 mailing lists:
 
        <zsh-announce@sunsite.dk>
-	      Announcements about releases, major changes in the shell and the
-	      monthly posting of the Zsh FAQ.  (moderated)
+          Announcements about releases, major changes in the shell and the
+          monthly posting of the Zsh FAQ.  (moderated)
 
        <zsh-users@sunsite.dk>
-	      User discussions.
+          User discussions.
 
        <zsh-workers@sunsite.dk>
-	      Hacking, development, bug reports and patches.
+          Hacking, development, bug reports and patches.
 
        To subscribe or unsubscribe, send mail to the associated administrative
        address for the mailing list.
@@ -135,7 +135,7 @@ MAILING LISTS
        <zsh-workers-unsubscribe@sunsite.dk>
 
        YOU ONLY NEED TO JOIN ONE OF THE MAILING LISTS AS THEY ARE NESTED.  All
-       submissions to zsh-announce are automatically forwarded	to  zsh-users.
+       submissions to zsh-announce are automatically forwarded  to  zsh-users.
        All  submissions  to zsh-users are automatically forwarded to zsh-work-
        ers.
 
@@ -145,20 +145,20 @@ MAILING LISTS
 
        The mailing lists are archived; the archives can be  accessed  via  the
        administrative  addresses  listed above.  There is also a hypertext ar-
-       chive,  maintained  by	Geoff	Wing   <gcw@zsh.org>,	available   at
+       chive,  maintained  by   Geoff   Wing   <gcw@zsh.org>,   available   at
        http://www.zsh.org/mla/.
 
 THE ZSH FAQ
        Zsh has a list of Frequently Asked Questions (FAQ), maintained by Peter
-       Stephenson <pws@zsh.org>.  It is  regularly  posted  to	the  newsgroup
-       comp.unix.shell	and the zsh-announce mailing list.  The latest version
-       can   be   found   at   any   of   the	Zsh   FTP   sites,    or    at
+       Stephenson <pws@zsh.org>.  It is  regularly  posted  to  the  newsgroup
+       comp.unix.shell  and the zsh-announce mailing list.  The latest version
+       can   be   found   at   any   of   the   Zsh   FTP   sites,    or    at
        http://www.zsh.org/FAQ/.   The  contact address for FAQ-related matters
        is <faqmaster@zsh.org>.
 
 THE ZSH WEB PAGE
        Zsh has a web page which is located at  http://www.zsh.org/.   This  is
-       maintained  by  Karsten	Thygesen <karthy@zsh.org>, of SunSITE Denmark.
+       maintained  by  Karsten  Thygesen <karthy@zsh.org>, of SunSITE Denmark.
        The contact address for web-related matters is <webmaster@zsh.org>.
 
 THE ZSH USERGUIDE
@@ -173,25 +173,25 @@ THE ZSH USERGUIDE
 THE ZSH WIKI
        A `wiki' website for zsh has been created  at  http://www.zshwiki.org/.
        This  is  a  site  which can be added to and modified directly by users
-       without any special permission.	You can add your own zsh tips and con-
+       without any special permission.  You can add your own zsh tips and con-
        figurations.
 
 INVOCATION OPTIONS
        The following flags are interpreted by the shell when invoked to deter-
        mine where the shell will read commands from:
 
-       -c     Take the first argument as a command  to	execute,  rather  than
-	      reading  commands  from a script or standard input.  If any fur-
-	      ther arguments are given, the  first  one  is  assigned  to  $0,
-	      rather than being used as a positional parameter.
+       -c     Take the first argument as a command  to  execute,  rather  than
+          reading  commands  from a script or standard input.  If any fur-
+          ther arguments are given, the  first  one  is  assigned  to  $0,
+          rather than being used as a positional parameter.
 
        -i     Force shell to be interactive.
 
        -s     Force shell to read commands from the standard input.  If the -s
-	      flag is not present and an argument is given, the first argument
-	      is taken to be the pathname of a script to execute.
+          flag is not present and an argument is given, the first argument
+          is taken to be the pathname of a script to execute.
 
-       After  the  first  one  or  two	arguments  have  been  appropriated as
+       After  the  first  one  or  two  arguments  have  been  appropriated as
        described above, the remaining arguments are assigned to the positional
        parameters.
 
@@ -202,19 +202,19 @@ INVOCATION OPTIONS
        single-letter  option, but takes a following string as the option name.
        For example,
 
-	      zsh -x -o shwordsplit scr
+          zsh -x -o shwordsplit scr
 
-       runs the script scr, setting the XTRACE	option	by  the  corresponding
-       letter  `-x'  and  the  SH_WORD_SPLIT  option  by name.	Options may be
+       runs the script scr, setting the XTRACE  option  by  the  corresponding
+       letter  `-x'  and  the  SH_WORD_SPLIT  option  by name.  Options may be
        turned off by name by using +o instead of -o.  -o  can  be  stacked  up
        with  preceding single-letter options, so for example `-xo shwordsplit'
        or `-xoshwordsplit' is equivalent to `-x -o shwordsplit'.
 
-       Options may also be  specified  by  name  in  GNU  long	option	style,
+       Options may also be  specified  by  name  in  GNU  long  option  style,
        `--option-name'.   When this is done, `-' characters in the option name
        are permitted: they are translated into `_', and thus ignored.  So, for
        example,  `zsh  --sh-word-split'  invokes  zsh  with  the SH_WORD_SPLIT
-       option turned on.  Like other option syntaxes, options  can  be	turned
+       option turned on.  Like other option syntaxes, options  can  be  turned
        off  by replacing the initial `-' with a `+'; thus `+-sh-word-split' is
        equivalent to  `--no-sh-word-split'.   Unlike  other  option  syntaxes,
        GNU-style long options cannot be stacked with any other options, so for
@@ -231,7 +231,7 @@ INVOCATION OPTIONS
        Firstly, a lone `-' (or `+') as an argument by itself ends option  pro-
        cessing.  Secondly, a special option `--' (or `+-'), which may be spec-
        ified on its own (which is the standard POSIX usage) or may be  stacked
-       with  preceding	options  (so `-x-' is equivalent to `-x --').  Options
+       with  preceding  options  (so `-x-' is equivalent to `-x --').  Options
        are not permitted to be stacked after `--' (so `-x-f' is an error), but
        note  the  GNU-style option form discussed above, where `--shwordsplit'
        is permitted and does not end option processing.
@@ -259,36 +259,36 @@ COMPATIBILITY
        PROMPT2, PROMPT3, PROMPT4, psvar, status, watch.
 
        The  usual zsh startup/shutdown scripts are not executed.  Login shells
-       source /etc/profile followed by $HOME/.profile.	If the ENV environment
+       source /etc/profile followed by $HOME/.profile.  If the ENV environment
        variable  is  set  on  invocation,  $ENV  is  sourced after the profile
        scripts.  The value of ENV is subjected to parameter expansion, command
        substitution,  and  arithmetic  expansion before being interpreted as a
-       pathname.  Note that the PRIVILEGED option also affects	the  execution
+       pathname.  Note that the PRIVILEGED option also affects  the  execution
        of startup files.
 
-       The  following  options	are  set if the shell is invoked as sh or ksh:
-       NO_BAD_PATTERN,	 NO_BANG_HIST,	 NO_BG_NICE,	NO_EQUALS,    NO_FUNC-
+       The  following  options  are  set if the shell is invoked as sh or ksh:
+       NO_BAD_PATTERN,   NO_BANG_HIST,   NO_BG_NICE,    NO_EQUALS,    NO_FUNC-
        TION_ARGZERO,  GLOB_SUBST,  NO_GLOBAL_EXPORT,  NO_HUP, INTERACTIVE_COM-
        MENTS, KSH_ARRAYS, NO_MULTIOS, NO_NOMATCH,  NO_NOTIFY,  POSIX_BUILTINS,
-       NO_PROMPT_PERCENT,    RM_STAR_SILENT,	SH_FILE_EXPANSION,    SH_GLOB,
-       SH_OPTION_LETTERS,  SH_WORD_SPLIT.   Additionally  the	BSD_ECHO   and
+       NO_PROMPT_PERCENT,    RM_STAR_SILENT,    SH_FILE_EXPANSION,    SH_GLOB,
+       SH_OPTION_LETTERS,  SH_WORD_SPLIT.   Additionally  the   BSD_ECHO   and
        IGNORE_BRACES  options  are  set  if  zsh  is invoked as sh.  Also, the
        KSH_OPTION_PRINT, LOCAL_OPTIONS,  PROMPT_BANG,  PROMPT_SUBST  and  SIN-
        GLE_LINE_ZLE options are set if zsh is invoked as ksh.
 
 RESTRICTED SHELL
-       When  the  basename  of	the command used to invoke zsh starts with the
+       When  the  basename  of  the command used to invoke zsh starts with the
        letter `r' or the `-r' command line option is supplied  at  invocation,
        the  shell  becomes  restricted.   Emulation  mode  is determined after
-       stripping the letter `r' from the invocation name.  The	following  are
+       stripping the letter `r' from the invocation name.  The  following  are
        disabled in restricted mode:
 
        o      changing directories with the cd builtin
 
-       o      changing	or unsetting the PATH, path, MODULE_PATH, module_path,
-	      SHELL, HISTFILE,	HISTSIZE,  GID,  EGID,	UID,  EUID,  USERNAME,
-	      LD_LIBRARY_PATH,	   LD_AOUT_LIBRARY_PATH,     LD_PRELOAD    and
-	      LD_AOUT_PRELOAD parameters
+       o      changing  or unsetting the PATH, path, MODULE_PATH, module_path,
+          SHELL, HISTFILE,  HISTSIZE,  GID,  EGID,  UID,  EUID,  USERNAME,
+          LD_LIBRARY_PATH,     LD_AOUT_LIBRARY_PATH,     LD_PRELOAD    and
+          LD_AOUT_PRELOAD parameters
 
        o      specifying command names containing /
 
@@ -297,13 +297,13 @@ RESTRICTED SHELL
        o      redirecting output to files
 
        o      using the exec builtin command to replace the shell with another
-	      command
+          command
 
        o      using jobs -Z to overwrite the shell process' argument and envi-
-	      ronment space
+          ronment space
 
        o      using the ARGV0 parameter to override argv[0] for external  com-
-	      mands
+          mands
 
        o      turning off restricted mode with set +r or unsetopt RESTRICTED
 
@@ -312,8 +312,8 @@ RESTRICTED SHELL
        mands  which can be safely invoked in the restricted environment.  They
        may also add further restrictions by disabling selected builtins.
 
-       Restricted  mode  can  also  be	activated  any	time  by  setting  the
-       RESTRICTED  option.   This  immediately	enables  all  the restrictions
+       Restricted  mode  can  also  be  activated  any  time  by  setting  the
+       RESTRICTED  option.   This  immediately  enables  all  the restrictions
        described above even if the shell still has not processed  all  startup
        files.
 
@@ -322,9 +322,9 @@ STARTUP/SHUTDOWN FILES
        Subsequent behaviour is modified by the RCS and GLOBAL_RCS options; the
        former  affects all startup files, while the second only affects global
        startup files (those shown here with an path starting with  a  /).   If
-       one  of	the  options  is  unset  at  any point, any subsequent startup
-       file(s) of the corresponding type will not be read.  It is also	possi-
-       ble  for  a  file  in  $ZDOTDIR	to  re-enable GLOBAL_RCS. Both RCS and
+       one  of  the  options  is  unset  at  any point, any subsequent startup
+       file(s) of the corresponding type will not be read.  It is also  possi-
+       ble  for  a  file  in  $ZDOTDIR  to  re-enable GLOBAL_RCS. Both RCS and
        GLOBAL_RCS are set by default.
 
        Commands are then read from $ZDOTDIR/.zshenv.  If the shell is a  login
@@ -333,12 +333,12 @@ STARTUP/SHUTDOWN FILES
        /etc/zshrc  and then $ZDOTDIR/.zshrc.  Finally, if the shell is a login
        shell, /etc/zlogin and $ZDOTDIR/.zlogin are read.
 
-       When  a	login  shell  exits,  the  files  $ZDOTDIR/.zlogout  and  then
+       When  a  login  shell  exits,  the  files  $ZDOTDIR/.zlogout  and  then
        /etc/zlogout  are  read.  This happens with either an explicit exit via
        the exit or logout commands, or an implicit exit by reading end-of-file
        from  the  terminal.   However, if the shell terminates due to exec'ing
        another process, the  logout  files  are  not  read.   These  are  also
-       affected  by  the  RCS  and GLOBAL_RCS options.	Note also that the RCS
+       affected  by  the  RCS  and GLOBAL_RCS options.  Note also that the RCS
        option affects the saving of history files, i.e. if RCS is  unset  when
        the shell exits, no history file will be saved.
 
@@ -353,7 +353,7 @@ STARTUP/SHUTDOWN FILES
 
        Any of these files may be pre-compiled with the zcompile  builtin  com-
        mand  (see  zshbuiltins(1)).   If a compiled file exists (named for the
-       original file plus the .zwc extension) and it is newer than the	origi-
+       original file plus the .zwc extension) and it is newer than the  origi-
        nal file, the compiled file will be used instead.
 
 FILES
@@ -380,4 +380,4 @@ SEE ALSO
 
 
 
-zsh 4.3.9		       October 30, 2008 			ZSH(1)
+zsh 4.3.9              October 30, 2008             ZSH(1)

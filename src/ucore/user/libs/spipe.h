@@ -4,17 +4,17 @@
 #include <types.h>
 
 typedef struct {
-	off_t p_rpos;
-	off_t p_wpos;
-	bool isclosed;
+    off_t p_rpos;
+    off_t p_wpos;
+    bool isclosed;
 } __spipe_state_t;
 
 typedef struct {
-	volatile bool isclosed;
-	sem_t spipe_sem;
-	uintptr_t addr;
-	__spipe_state_t *state;
-	uint8_t *buf;
+    volatile bool isclosed;
+    sem_t spipe_sem;
+    uintptr_t addr;
+    __spipe_state_t *state;
+    uint8_t *buf;
 } spipe_t;
 
 int spipe(spipe_t *p);

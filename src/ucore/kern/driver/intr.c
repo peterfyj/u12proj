@@ -4,12 +4,12 @@
 /* intr_enable - enable irq interrupt */
 void
 intr_enable(void) {
-	sti();
+    sti();
 }
 
 /* intr_disable - disable irq interrupt */
 void
 intr_disable(void) {
-	cli();
+    cli();
 }
 

@@ -3,7 +3,7 @@
 
 int
 main(void) {
-	asm volatile("int $14");
-	panic("FAIL: T.T\n");
+    asm volatile("int $14");
+    panic("FAIL: T.T\n");
 }
 

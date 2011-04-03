@@ -1,4 +1,4 @@
-MV(1)				 User Commands				 MV(1)
+MV(1)                User Commands               MV(1)
 
 
 
@@ -17,62 +17,62 @@ DESCRIPTION
        too.
 
        --backup[=CONTROL]
-	      make a backup of each existing destination file
+          make a backup of each existing destination file
 
        -b     like --backup but does not accept an argument
 
        -f, --force
-	      do not prompt before overwriting
+          do not prompt before overwriting
 
        -i, --interactive
-	      prompt before overwrite
+          prompt before overwrite
 
        -n, --no-clobber
-	      do not overwrite an existing file
+          do not overwrite an existing file
 
        If you specify more than one of -i, -f, -n, only the  final  one  takes
        effect.
 
        --strip-trailing-slashes
-	      remove any trailing slashes from each SOURCE argument
+          remove any trailing slashes from each SOURCE argument
 
        -S, --suffix=SUFFIX
-	      override the usual backup suffix
+          override the usual backup suffix
 
        -t, --target-directory=DIRECTORY
-	      move all SOURCE arguments into DIRECTORY
+          move all SOURCE arguments into DIRECTORY
 
        -T, --no-target-directory
-	      treat DEST as a normal file
+          treat DEST as a normal file
 
        -u, --update
-	      move  only  when	the  SOURCE file is newer than the destination
-	      file or when the destination file is missing
+          move  only  when  the  SOURCE file is newer than the destination
+          file or when the destination file is missing
 
        -v, --verbose
-	      explain what is being done
+          explain what is being done
 
        --help display this help and exit
 
        --version
-	      output version information and exit
+          output version information and exit
 
-       The  backup  suffix  is	`~',  unless  set  with   --suffix   or   SIM-
+       The  backup  suffix  is  `~',  unless  set  with   --suffix   or   SIM-
        PLE_BACKUP_SUFFIX.   The version control method may be selected via the
-       --backup option or through the  VERSION_CONTROL	environment  variable.
+       --backup option or through the  VERSION_CONTROL  environment  variable.
        Here are the values:
 
        none, off
-	      never make backups (even if --backup is given)
+          never make backups (even if --backup is given)
 
        numbered, t
-	      make numbered backups
+          make numbered backups
 
        existing, nil
-	      numbered if numbered backups exist, simple otherwise
+          numbered if numbered backups exist, simple otherwise
 
        simple, never
-	      always make simple backups
+          always make simple backups
 
 AUTHOR
        Written by Mike Parker, David MacKenzie, and Jim Meyering.
@@ -86,7 +86,7 @@ REPORTING BUGS
 COPYRIGHT
        Copyright  (C) 2010 Free Software Foundation, Inc.  License GPLv3+: GNU
        GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
-       This is free software: you are free  to	change	and  redistribute  it.
+       This is free software: you are free  to  change  and  redistribute  it.
        There is NO WARRANTY, to the extent permitted by law.
 
 SEE ALSO
@@ -96,10 +96,10 @@ SEE ALSO
        the info and mv programs are properly installed at your site, the  com-
        mand
 
-	      info coreutils 'mv invocation'
+          info coreutils 'mv invocation'
 
        should give you access to the complete manual.
 
 
 
-GNU coreutils 8.5		  April 2010				 MV(1)
+GNU coreutils 8.5         April 2010                 MV(1)

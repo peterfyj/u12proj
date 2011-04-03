@@ -7,18 +7,18 @@ struct inode;
 struct iobuf;
 
 struct device {
-	uint32_t d_blocks;
-	uint32_t d_blocksize;
-	int (*d_open)(struct device *dev, uint32_t open_flags);
-	int (*d_close)(struct device *dev);
-	int (*d_io)(struct device *dev, struct iobuf *iob, bool write);
-	int (*d_ioctl)(struct device *dev, int op, void *data);
+    size_t d_blocks;
+    size_t d_blocksize;
+    int (*d_open)(struct device *dev, uint32_t open_flags);
+    int (*d_close)(struct device *dev);
+    int (*d_io)(struct device *dev, struct iobuf *iob, bool write);
+    int (*d_ioctl)(struct device *dev, int op, void *data);
 };
 
-#define dop_open(dev, open_flags)			((dev)->d_open(dev, open_flags))
-#define dop_close(dev)						((dev)->d_close(dev))
-#define dop_io(dev, iob, write)				((dev)->d_io(dev, iob, write))
-#define dop_ioctl(dev, op, data)			((dev)->d_ioctl(dev, op, data))
+#define dop_open(dev, open_flags)           ((dev)->d_open(dev, open_flags))
+#define dop_close(dev)                      ((dev)->d_close(dev))
+#define dop_io(dev, iob, write)             ((dev)->d_io(dev, iob, write))
+#define dop_ioctl(dev, op, data)            ((dev)->d_ioctl(dev, op, data))
 
 void dev_init(void);
 struct inode *dev_create_inode(void);

@@ -13,11 +13,11 @@
  * */
 struct inode *
 __alloc_inode(int type) {
-	struct inode *node;
-	if ((node = kmalloc(sizeof(struct inode))) != NULL) {
-		node->in_type = type;
-	}
-	return node;
+    struct inode *node;
+    if ((node = kmalloc(sizeof(struct inode))) != NULL) {
+        node->in_type = type;
+    }
+    return node;
 }
 
 /* *
@@ -26,10 +26,10 @@ __alloc_inode(int type) {
  * */
 void
 inode_init(struct inode *node, const struct inode_ops *ops, struct fs *fs) {
-	atomic_set(&(node->ref_count), 0);
-	atomic_set(&(node->open_count), 0);
-	node->in_ops = ops, node->in_fs = fs;
-	vop_ref_inc(node);
+    atomic_set(&(node->ref_count), 0);
+    atomic_set(&(node->open_count), 0);
+    node->in_ops = ops, node->in_fs = fs;
+    vop_ref_inc(node);
 }
 
 /* *
@@ -38,9 +38,9 @@ inode_init(struct inode *node, const struct inode_ops *ops, struct fs *fs) {
  * */
 void
 inode_kill(struct inode *node) {
-	assert(inode_ref_count(node) == 0);
-	assert(inode_open_count(node) == 0);
-	kfree(node);
+    assert(inode_ref_count(node) == 0);
+    assert(inode_open_count(node) == 0);
+    kfree(node);
 }
 
 /* *
@@ -49,7 +49,7 @@ inode_kill(struct inode *node) {
  * */
 int
 inode_ref_inc(struct inode *node) {
-	return atomic_add_return(&(node->ref_count), 1);
+    return atomic_add_return(&(node->ref_count), 1);
 }
 
 /* *
@@ -59,14 +59,14 @@ inode_ref_inc(struct inode *node) {
  * */
 int
 inode_ref_dec(struct inode *node) {
-	assert(inode_ref_count(node) > 0);
-	int ref_count, ret;
-	if ((ref_count = atomic_sub_return(&(node->ref_count), 1)) == 0) {
-		if ((ret = vop_reclaim(node)) != 0 && ret != -E_BUSY) {
-			cprintf("vfs: warning: vop_reclaim: %e.\n", ret);
-		}
-	}
-	return ref_count;
+    assert(inode_ref_count(node) > 0);
+    int ref_count, ret;
+    if ((ref_count = atomic_sub_return(&(node->ref_count), 1)) == 0) {
+        if ((ret = vop_reclaim(node)) != 0 && ret != -E_BUSY) {
+            cprintf("vfs: warning: vop_reclaim: %e.\n", ret);
+        }
+    }
+    return ref_count;
 }
 
 /* *
@@ -75,7 +75,7 @@ inode_ref_dec(struct inode *node) {
  * */
 int
 inode_open_inc(struct inode *node) {
-	return atomic_add_return(&(node->open_count), 1);
+    return atomic_add_return(&(node->open_count), 1);
 }
 
 /* *
@@ -85,14 +85,14 @@ inode_open_inc(struct inode *node) {
  * */
 int
 inode_open_dec(struct inode *node) {
-	assert(inode_open_count(node) > 0);
-	int open_count, ret;
-	if ((open_count = atomic_sub_return(&(node->open_count), 1)) == 0) {
-		if ((ret = vop_close(node)) != 0) {
-			cprintf("vfs: warning: vop_close: %e.\n", ret);
-		}
-	}
-	return open_count;
+    assert(inode_open_count(node) > 0);
+    int open_count, ret;
+    if ((open_count = atomic_sub_return(&(node->open_count), 1)) == 0) {
+        if ((ret = vop_close(node)) != 0) {
+            cprintf("vfs: warning: vop_close: %e.\n", ret);
+        }
+    }
+    return open_count;
 }
 
 /* *
@@ -101,11 +101,11 @@ inode_open_dec(struct inode *node) {
  * */
 void
 inode_check(struct inode *node, const char *opstr) {
-	assert(node != NULL && node->in_ops != NULL);
-	assert(node->in_ops->vop_magic == VOP_MAGIC);
-	int ref_count = inode_ref_count(node), open_count = inode_open_count(node);
-	assert(ref_count >= open_count && open_count >= 0);
-	assert(ref_count < MAX_INODE_COUNT && open_count < MAX_INODE_COUNT);
+    assert(node != NULL && node->in_ops != NULL);
+    assert(node->in_ops->vop_magic == VOP_MAGIC);
+    int ref_count = inode_ref_count(node), open_count = inode_open_count(node);
+    assert(ref_count >= open_count && open_count >= 0);
+    assert(ref_count < MAX_INODE_COUNT && open_count < MAX_INODE_COUNT);
 }
 
 /* *
@@ -113,26 +113,26 @@ inode_check(struct inode *node, const char *opstr) {
  * */
 int
 null_vop_pass(void) {
-	return 0;
+    return 0;
 }
 
 int
 null_vop_inval(void) {
-	return -E_INVAL;
+    return -E_INVAL;
 }
 
 int
 null_vop_unimp(void) {
-	return -E_UNIMP;
+    return -E_UNIMP;
 }
 
 int
 null_vop_isdir(void) {
-	return -E_ISDIR;
+    return -E_ISDIR;
 }
 
 int
 null_vop_notdir(void) {
-	return -E_NOTDIR;
+    return -E_NOTDIR;
 }
 

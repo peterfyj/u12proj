@@ -5,8 +5,8 @@
 #include <dirent.h>
 
 typedef struct {
-	int fd;
-	struct dirent dirent;
+    int fd;
+    struct dirent dirent;
 } DIR;
 
 DIR *opendir(const char *path);
