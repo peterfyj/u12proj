@@ -103,6 +103,7 @@ TEXT runtime·mmap(SB),7,$0
 //	NOTL	AX
 //	INCL	AX
 	MOVL	DX, AX
+	ANDL	$0xfffff000, AX
 	RET
 
 TEXT runtime·munmap(SB),7,$0
