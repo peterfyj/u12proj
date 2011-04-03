@@ -48,12 +48,6 @@ TEXT runtime·gettime(SB), 7, $32
 	RET
 
 TEXT runtime·rt_sigaction(SB),7,$0
-	MOVL	$174, AX		// syscall - rt_sigaction
-	MOVL	4(SP), BX
-	MOVL	8(SP), CX
-	MOVL	12(SP), DX
-	MOVL	16(SP), SI
-	INT	$0x80
 	RET
 
 TEXT runtime·sigtramp(SB),7,$44
@@ -96,14 +90,10 @@ TEXT runtime·sigreturn(SB),7,$0
 	RET
 
 TEXT runtime·mmap(SB),7,$0
-	MOVL	$192, AX	// mmap2
-	MOVL	4(SP), BX
+	MOVL	$20, AX	// mmap2
+	MOVL	4(SP), DX
 	MOVL	8(SP), CX
-	MOVL	12(SP), DX
-	MOVL	16(SP), SI
-	MOVL	20(SP), DI
-	MOVL	24(SP), BP
-	SHRL	$12, BP
+	MOVL	12(SP), BX
 	INT	$0x80
 	CMPL	AX, $0xfffff001
 	JLS	3(PC)
