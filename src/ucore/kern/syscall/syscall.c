@@ -12,7 +12,7 @@
 #include <dirent.h>
 #include <sysfile.h>
 
-static int
+static uint32_t
 sys_modify_ldt(uint32_t arg[])
 {
 	int func = (int)arg[0];
@@ -98,6 +98,8 @@ sys_mmap(uint32_t arg[]) {
     uintptr_t *addr_store = (uintptr_t *)arg[0];
     size_t len = (size_t)arg[1];
     uint32_t mmap_flags = (uint32_t)arg[2];
+	cprintf("addr:0x%08x\n", addr_store);
+	cprintf("len:0x%08x\n", len);
     return do_mmap(addr_store, len, mmap_flags);
 }
 

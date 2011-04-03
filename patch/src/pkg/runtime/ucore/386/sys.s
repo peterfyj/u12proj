@@ -23,11 +23,14 @@ TEXT runtime·exit1(SB),7,$0
 	RET
 
 TEXT runtime·write(SB),7,$0
-	MOVL	$4, AX		// syscall - write
-	MOVL	4(SP),  BX
-	MOVL	8(SP), CX
-	MOVL	12(SP), DX
-	INT	$0x80
+	MOVL	8(SP), BX	// *buf
+	MOVL	12(SP), CX	// count
+AGAIN:
+	MOVL	$30, AX
+	MOVL	0(BX), DX
+	ADDL	$4, BX
+	INT $0X80
+	LOOP	AGAIN
 	RET
 
 TEXT runtime·gettime(SB), 7, $32
@@ -93,12 +96,13 @@ TEXT runtime·mmap(SB),7,$0
 	MOVL	$20, AX	// mmap2
 	MOVL	4(SP), DX
 	MOVL	8(SP), CX
-	MOVL	12(SP), BX
+	MOVL	$0xf, BX
 	INT	$0x80
-	CMPL	AX, $0xfffff001
-	JLS	3(PC)
-	NOTL	AX
-	INCL	AX
+//	CMPL	AX, $0xfffff001
+//	JLS	3(PC)
+//	NOTL	AX
+//	INCL	AX
+	MOVL	DX, AX
 	RET
 
 TEXT runtime·munmap(SB),7,$0

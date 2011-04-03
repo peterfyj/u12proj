@@ -182,7 +182,8 @@ trap_dispatch(struct trapframe *tf) {
         break;
     case T_SYSCALL:
 		if (tf->tf_regs.reg_eax != SYS_write && 
-				tf->tf_regs.reg_eax != SYS_read)
+				tf->tf_regs.reg_eax != SYS_read &&
+				tf->tf_regs.reg_eax != SYS_putc)
 			cprintf("Syscall [%d] detected!\n", tf->tf_regs.reg_eax);
         syscall();
         break;
