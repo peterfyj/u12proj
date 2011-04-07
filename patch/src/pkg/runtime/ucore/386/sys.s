@@ -9,28 +9,29 @@
 #include "386/asm.h"
 
 TEXT runtime·exit(SB),7,$0
-	MOVL	$252, AX	// syscall number
-	MOVL	4(SP), BX
+	MOVL	$1, AX	// syscall number
+	MOVL	4(SP), DX
 	INT	$0x80
 	INT $3	// not reached
 	RET
 
 TEXT runtime·exit1(SB),7,$0
 	MOVL	$1, AX	// exit - exit the current os thread
-	MOVL	4(SP), BX
+	MOVL	4(SP), DX
 	INT	$0x80
 	INT $3	// not reached
 	RET
 
 TEXT runtime·write(SB),7,$0
-	MOVL	8(SP), BX	// *buf
-	MOVL	12(SP), CX	// count
-AGAIN:
-	MOVL	$30, AX
-	MOVL	0(BX), DX
-	ADDL	$4, BX
+	MOVL	$103, AX
+	MOVL	4(SP), DX
+	CMPL	DX, $2
+	JNE	WRITE_NOT_CHANGE
+	MOVL    $1, DX
+WRITE_NOT_CHANGE:
+	MOVL	8(SP), CX	// *buf
+	MOVL	12(SP), BX	// count
 	INT $0X80
-	LOOP	AGAIN
 	RET
 
 TEXT runtime·gettime(SB), 7, $32
@@ -96,14 +97,14 @@ TEXT runtime·mmap(SB),7,$0
 	MOVL	$20, AX	// mmap2
 	MOVL	4(SP), DX
 	MOVL	8(SP), CX
-	MOVL	$0xf, BX
+	MOVL	$0x100, BX
 	INT	$0x80
 //	CMPL	AX, $0xfffff001
 //	JLS	3(PC)
 //	NOTL	AX
 //	INCL	AX
-	MOVL	DX, AX
-	ANDL	$0xfffff000, AX
+//	MOVL	DX, AX
+//	ANDL	$0xfffff000, AX
 	RET
 
 TEXT runtime·munmap(SB),7,$0

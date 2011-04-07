@@ -9,7 +9,8 @@ runtime·SysAlloc(uintptr n)
 	void *p;
 
 	mstats.sys += n;
-	p = runtime·mmap(nil, n, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_ANON|MAP_PRIVATE, -1, 0);
+	runtime·mmap((void*)&p, n, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_ANON|MAP_PRIVATE, -1, 0);
+	/*
 	if(p < (void*)4096) {
 		if(p == (void*)EACCES) {
 			runtime·printf("runtime: mmap: access denied\n");
@@ -18,6 +19,7 @@ runtime·SysAlloc(uintptr n)
 		}
 		return nil;
 	}
+	*/
 	return p;
 }
 
@@ -45,7 +47,11 @@ runtime·SysReserve(void *v, uintptr n)
 	if(sizeof(void*) == 8)
 		return v;
 	
-	return runtime·mmap(v, n, PROT_NONE, MAP_ANON|MAP_PRIVATE, -1, 0);
+	void *p = v;
+
+	runtime·mmap((void*)&p, n, PROT_NONE, MAP_ANON|MAP_PRIVATE, -1, 0);
+	runtime·printf("allocated address: %x\n", p);
+	return p;
 }
 
 void
@@ -57,7 +63,7 @@ runtime·SysMap(void *v, uintptr n)
 
 	// On 64-bit, we don't actually have v reserved, so tread carefully.
 	if(sizeof(void*) == 8) {
-		p = runtime·mmap(v, n, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_ANON|MAP_PRIVATE, -1, 0);
+	        runtime·mmap((void*)&p, n, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_ANON|MAP_PRIVATE, -1, 0);
 		if(p != v) {
 			runtime·printf("runtime: address space conflict: map(%v) = %v\n", v, p);
 			runtime·throw("runtime: address space conflict");
@@ -65,7 +71,9 @@ runtime·SysMap(void *v, uintptr n)
 		return;
 	}
 
-	p = runtime·mmap(v, n, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_ANON|MAP_FIXED|MAP_PRIVATE, -1, 0);
+	runtime·mmap((void*)&p, n, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_ANON|MAP_FIXED|MAP_PRIVATE, -1, 0);
+	/*
 	if(p != v)
 		runtime·throw("runtime: cannot map pages in arena address space");
+	*/
 }
