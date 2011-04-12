@@ -468,6 +468,56 @@ exit_mmap(struct mm_struct *mm) {
     }
 }
 
+/**
+ * The standard get_unmapped_area() will check from the tail
+ * of the vma link. This is not we want because in GO this is
+ * likely to make big fragment when GO is requesting 768MB reserved
+ * area.  get_unmapped_area_with_hint() will check from the specific
+ * address addr, all the way up to USERTOP.
+ * The vma link is like this:
+ * (HDR)<->(vma)<->(vma)<->(vma)<->...<->(vma)<--
+ *   ^                                          |
+ *   |                                          |
+ *   --------------------------------------------
+ * Where (HDR) refers to mm->mmap_list.
+ *
+ * [!]Note: Please use this ONLY when addr is sure to be included in an
+ * existing vma! Otherwise the function would return 0.
+ */
+uintptr_t
+get_unmapped_area_with_hint(struct mm_struct *mm, uintptr_t addr, size_t len) {
+	
+	if (len == 0 || len > USERTOP) {
+		return 0;
+	}
+	
+	struct vma_struct *vma = find_vma(mm, addr);	// First find which vma includes addr;
+	struct vma_struct *vma_next;					// For the checking loop;
+	if (vma == NULL) {
+		return 0;
+	}
+	
+	list_entry_t *list = &(mm->mmap_list);
+	list_entry_t *le = &(vma->list_link);
+	
+	do {
+		vma = le2vma(le, list_link);				// Redundant for the init vma;
+		if (vma->vm_end + len > USERTOP) {			// Reaching USERTOP;
+			return 0;
+		}
+		if (list_next(le) == list) {				// Which means we can place it after the last one;
+			return vma->vm_end;
+		} else {									// Check whether it can placed right after le;
+			vma_next = le2vma(list_next(le), list_link);
+			if (vma->vm_end + len <= vma_next->vm_start) {
+				return vma->vm_end;
+			}
+		}
+	} while ((le = list_next(le)) != list);
+	
+	return 0;										// Fail;
+}
+
 uintptr_t
 get_unmapped_area(struct mm_struct *mm, size_t len) {
     if (len == 0 || len > USERTOP) {

@@ -77,6 +77,7 @@ int mm_map_shmem(struct mm_struct *mm, uintptr_t addr, uint32_t vm_flags,
 int mm_unmap(struct mm_struct *mm, uintptr_t addr, size_t len);
 int dup_mmap(struct mm_struct *to, struct mm_struct *from);
 void exit_mmap(struct mm_struct *mm);
+uintptr_t get_unmapped_area_with_hint(struct mm_struct *mm, uintptr_t addr, size_t len);
 uintptr_t get_unmapped_area(struct mm_struct *mm, size_t len);
 int mm_brk(struct mm_struct *mm, uintptr_t addr, size_t len);
 

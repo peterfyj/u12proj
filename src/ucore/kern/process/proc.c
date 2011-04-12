@@ -1127,10 +1127,10 @@ do_mmap(uintptr_t *addr_store, size_t len, uint32_t mmap_flags) {
     if ((ret = mm_map(mm, addr, len, vm_flags, NULL)) == 0) {
         *addr_store = addr;
     } else {
-        addr = get_unmapped_area(mm, len);
-	if ((ret = mm_map(mm, addr, len, vm_flags, NULL)) == 0) {
-	    *addr_store = addr;
-	}
+        addr = get_unmapped_area_with_hint(mm, start, len);
+		if ((ret = mm_map(mm, addr, len, vm_flags, NULL)) == 0) {
+			*addr_store = addr;
+		}
     }
 out_unlock:
     cprintf("do_map: 0x%x\n", *addr_store);

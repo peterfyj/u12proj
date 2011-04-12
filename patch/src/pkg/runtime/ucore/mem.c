@@ -71,9 +71,8 @@ runtime·SysMap(void *v, uintptr n)
 		return;
 	}
 
+	p = v;
 	runtime·mmap((void*)&p, n, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_ANON|MAP_FIXED|MAP_PRIVATE, -1, 0);
-	/*
 	if(p != v)
 		runtime·throw("runtime: cannot map pages in arena address space");
-	*/
 }

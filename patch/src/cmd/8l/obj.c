@@ -229,7 +229,6 @@ main(int argc, char *argv[])
 			INITRND = 4096;
 		break;
 	case Hlinux:	/* elf32 executable */
-	case Hucore:
 	case Hfreebsd:
 		/*
 		 * ELF uses TLS offsets negative from %gs.
@@ -244,6 +243,17 @@ main(int argc, char *argv[])
 			INITTEXT = 0x08048000+HEADR;
 		if(INITDAT == -1)
 			INITDAT = 0;
+		if(INITRND == -1)
+			INITRND = 4096;
+		break;
+	case Hucore:
+		tlsoffset = -8;
+		elfinit();
+		HEADR = ELFRESERVE;
+		if(INITTEXT == -1)
+			INITTEXT = 0x08048000+HEADR;
+		if(INITDAT == -1)
+			INITDAT = 0x00800000;
 		if(INITRND == -1)
 			INITRND = 4096;
 		break;
