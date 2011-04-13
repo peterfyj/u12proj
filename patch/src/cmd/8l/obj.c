@@ -253,7 +253,7 @@ main(int argc, char *argv[])
 		if(INITTEXT == -1)
 			INITTEXT = 0x08048000+HEADR;
 		if(INITDAT == -1)
-			INITDAT = 0x00800000;
+			INITDAT = 0;
 		if(INITRND == -1)
 			INITRND = 4096;
 		break;

@@ -1123,7 +1123,7 @@ do_mmap(uintptr_t *addr_store, size_t len, uint32_t mmap_flags) {
         if ((addr = get_unmapped_area(mm, len)) == 0) {
             goto out_unlock;
         }
-    }
+	}
     if ((ret = mm_map(mm, addr, len, vm_flags, NULL)) == 0) {
         *addr_store = addr;
     } else {
