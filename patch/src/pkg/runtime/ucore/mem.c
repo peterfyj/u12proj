@@ -6,11 +6,11 @@
 void*
 runtime·SysAlloc(uintptr n)
 {
-	runtime·printf("\ndebug(SysAlloc)\n");
 	void *p;
 	p = nil;
 	mstats.sys += n;
 	runtime·mmap((void*)&p, n, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_ANON|MAP_PRIVATE, -1, 0);
+	/*
 	if(p < (void*)4096) {
 		if(p == (void*)EACCES) {
 			runtime·printf("runtime: mmap: access denied\n");
@@ -18,7 +18,8 @@ runtime·SysAlloc(uintptr n)
 			runtime·exit(2);
 		}
 		return nil;
-	}
+		}*/
+	runtime·memclr(p, n);
 	return p;
 }
 
@@ -40,7 +41,6 @@ runtime·SysFree(void *v, uintptr n)
 void*
 runtime·SysReserve(void *v, uintptr n)
 {
-	runtime·printf("\ndebug(SysReserve):%x\n", v);
 	// On 64-bit, people with ulimit -v set complain if we reserve too
 	// much address space.  Instead, assume that the reservation is okay
 	// and check the assumption in SysMap.
@@ -50,13 +50,13 @@ runtime·SysReserve(void *v, uintptr n)
 	void *p = v;
 
 	runtime·mmap((void*)&p, n, PROT_NONE, MAP_ANON|MAP_PRIVATE, -1, 0);
+	
 	return p;
 }
 
 void
 runtime·SysMap(void *v, uintptr n)
 {
-	runtime·printf("\ndebug(SysMap):%x\n", v);
 	void *p;
 	
 	mstats.sys += n;
@@ -71,8 +71,14 @@ runtime·SysMap(void *v, uintptr n)
 		return;
 	}
 
+	runtime·memclr(v, n);
+
+	return;
+
+	/*
 	p = v;
 	runtime·mmap((void*)&p, n, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_ANON|MAP_FIXED|MAP_PRIVATE, -1, 0);
 	if(p != v)
 		runtime·throw("runtime: cannot map pages in arena address space");
+	*/
 }

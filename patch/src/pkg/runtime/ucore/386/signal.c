@@ -107,7 +107,8 @@ void
 runtime·signalstack(byte *p, int32 n)
 {
 	Sigaltstack st;
-
+	return;
+	
 	st.ss_sp = p;
 	st.ss_size = n;
 	st.ss_flags = 0;
