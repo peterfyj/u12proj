@@ -4,6 +4,10 @@
 package syscall
 
 const (
+	// For ucore
+	SYS_UCORE_PUTC             = 30
+	
+	// The original linux's
 	SYS_RESTART_SYSCALL        = 0
 	SYS_EXIT                   = 1
 	SYS_FORK                   = 2

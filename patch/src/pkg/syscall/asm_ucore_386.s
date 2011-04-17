@@ -12,9 +12,9 @@
 TEXT	·Syscall(SB),7,$0
 	CALL	runtime·entersyscall(SB)
 	MOVL	4(SP), AX	// syscall entry
-	MOVL	8(SP), BX
+	MOVL	8(SP), DX
 	MOVL	12(SP), CX
-	MOVL	16(SP), DX
+	MOVL	16(SP), BX
 	MOVL	$0, SI
 	MOVL	$0,  DI
 	INT	$0x80

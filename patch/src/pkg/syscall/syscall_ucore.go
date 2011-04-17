@@ -13,7 +13,7 @@ package syscall
 
 import "unsafe"
 
-const OS = "linux"
+const OS = "ucore"
 
 /*
  * Wrapped
