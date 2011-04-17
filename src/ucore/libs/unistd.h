@@ -52,6 +52,7 @@
 #define SYS_pipe            140
 #define SYS_mkfifo          141
 #define SYS_modify_ldt		147
+#define SYS_gettimeofday	148
 
 /* SYS_fork flags */
 #define CLONE_VM            0x00000100  // set if VM shared between processes

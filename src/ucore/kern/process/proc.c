@@ -1133,7 +1133,7 @@ do_mmap(uintptr_t *addr_store, size_t len, uint32_t mmap_flags) {
 		}
     }
 out_unlock:
-    cprintf("do_map: 0x%x\n", *addr_store);
+    //cprintf("do_map: 0x%x\n", *addr_store);
     unlock_mm(mm);
     return ret;
 }

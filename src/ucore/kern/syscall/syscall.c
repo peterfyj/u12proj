@@ -83,6 +83,15 @@ sys_gettime(uint32_t arg[]) {
 }
 
 static uint32_t
+sys_gettimeofday(uint32_t arg[]) {
+	int64_t *sec = (int64_t *)arg[0];
+	int32_t *usec = (int32_t *)arg[1];
+	*sec = (int64_t)ticks % 100;
+	*usec = (ticks % 100) * 10000;
+	return 0;
+}
+
+static uint32_t
 sys_getpid(uint32_t arg[]) {
     return current->pid;
 }
@@ -375,6 +384,7 @@ static uint32_t (*syscalls[])(uint32_t arg[]) = {
     [SYS_pipe]              sys_pipe,
     [SYS_mkfifo]            sys_mkfifo,
 	[SYS_modify_ldt]		sys_modify_ldt,
+	[SYS_gettimeofday]		sys_gettimeofday,
 };
 
 #define NUM_SYSCALLS        ((sizeof(syscalls)) / (sizeof(syscalls[0])))

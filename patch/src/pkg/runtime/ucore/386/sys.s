@@ -34,9 +34,10 @@ WRITE_NOT_CHANGE:
 	INT $0X80
 	RET
 
-TEXT runtime·gettime(SB), 7, $32
-	MOVL	$78, AX			// syscall - gettimeofday
-	LEAL	8(SP), BX
+TEXT runtime·gettime(SB), 7, $0
+	MOVL	$148, AX			// syscall - gettimeofday
+	
+/*	LEAL	8(SP), BX
 	MOVL	$0, CX
 	MOVL	$0, DX
 	INT	$0x80
@@ -48,7 +49,11 @@ TEXT runtime·gettime(SB), 7, $32
 
 	MOVL	12(SP), BX	// usec
 	MOVL	usec+4(FP), DI
-	MOVL	BX, (DI)
+	MOVL	BX, (DI) */
+	
+	MOVL	4(SP), DX	// &sec
+	MOVL	8(SP), CX	// &usec
+	INT $0X80
 	RET
 
 TEXT runtime·rt_sigaction(SB),7,$0
