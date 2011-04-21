@@ -139,10 +139,12 @@ gdt_init(void) {
 
 void set_ldt(user_desc* p, uint32_t bytecount)
 {
+#ifdef DEBUG_PRINT_SET_LDT
 	cprintf("set_ldt: entry = 0x%x base = 0x%x limit = 0x%x\n",
 			p->entry_number,
 			p->base_addr,
 			p->limit);
+#endif
 	gdt[p->entry_number] = SEG(STA_W | STA_R, p->base_addr, p->limit, DPL_USER);
 	asm volatile ("lgdt (%0)" :: "r" (&gdt_pd));
 }

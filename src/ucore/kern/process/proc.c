@@ -1094,7 +1094,9 @@ do_sleep(unsigned int time) {
 int
 do_mmap(uintptr_t *addr_store, size_t len, uint32_t mmap_flags) {
     struct mm_struct *mm = current->mm;
+#ifdef DEBUG_PRINT_DO_MMAP
     cprintf("do_mmap(0x%x(->0x%x), 0x%x, 0x%x)\n", addr_store, *addr_store, len, mmap_flags);
+#endif
     if (mm == NULL) {
         panic("kernel thread call mmap!!.\n");
     }
@@ -1133,7 +1135,6 @@ do_mmap(uintptr_t *addr_store, size_t len, uint32_t mmap_flags) {
 		}
     }
 out_unlock:
-    //cprintf("do_map: 0x%x\n", *addr_store);
     unlock_mm(mm);
     return ret;
 }
