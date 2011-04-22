@@ -3,7 +3,7 @@ CURRENT=$(pwd)
 
 # Packages that needed to be partly recompiled;
 BUILD_PKG="runtime\
-		   sync/atomic
+		   sync/atomic\
 		   sync\
 		   syscall\
 		   os\
