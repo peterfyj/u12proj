@@ -6,6 +6,7 @@ package syscall
 const (
 	// For ucore
 	SYS_UCORE_PUTC             = 30
+	SYS_UCORE_GETTIMEOFDAY	   = 148
 	
 	// The original linux's
 	SYS_RESTART_SYSCALL        = 0

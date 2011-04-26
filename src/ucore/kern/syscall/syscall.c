@@ -86,8 +86,10 @@ static uint32_t
 sys_gettimeofday(uint32_t arg[]) {
 	int64_t *sec = (int64_t *)arg[0];
 	int32_t *usec = (int32_t *)arg[1];
-	*sec = (int64_t)ticks % 100;
-	*usec = (ticks % 100) * 10000;
+	if (sec)
+		*sec = (int64_t)ticks % 100;
+	if (usec)
+		*usec = (ticks % 100) * 10000;
 	return 0;
 }
 
