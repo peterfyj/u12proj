@@ -137,11 +137,9 @@ TEXT runtime·futex(SB),7,$0
 
 // int32 clone(int32 flags, void *stack, M *m, G *g, void (*fn)(void));
 TEXT runtime·clone(SB),7,$0
-	MOVL	$120, AX	// clone
-	MOVL	flags+4(SP), BX
+	MOVL	$5, AX	// clone
+	MOVL	$0xf00, DX
 	MOVL	stack+8(SP), CX
-	MOVL	$0, DX	// parent tid ptr
-	MOVL	$0, DI	// child tid ptr
 
 	// Copy m, g, fn off parent stack for use by child.
 	SUBL	$16, CX
