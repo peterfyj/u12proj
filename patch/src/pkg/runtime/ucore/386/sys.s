@@ -122,17 +122,33 @@ TEXT runtime·munmap(SB),7,$0
 	INT $3
 	RET
 
-// int32 futex(int32 *uaddr, int32 op, int32 val,
-//	struct timespec *timeout, int32 *uaddr2, int32 val2);
-TEXT runtime·futex(SB),7,$0
-	MOVL	$240, AX	// futex
-	MOVL	4(SP), BX
-	MOVL	8(SP), CX
-	MOVL	12(SP), DX
-	MOVL	16(SP), SI
-	MOVL	20(SP), DI
-	MOVL	24(SP), BP
+// uint32 runtime·sem_init(uint32 value)
+TEXT runtime·sem_init(SB),7,$0
+	MOVL	$40, AX		// sys_sem_init;
+	MOVL	4(SP), DX
 	INT	$0x80
+	RET
+
+// uint32 runtime·sem_post(uint32 sema)
+TEXT runtime·sem_post(SB),7,$0
+	MOVL	$41, AX		// sys_sem_post;
+	MOVL	4(SP), DX
+	INT $0X80
+	RET
+
+// uint32 runtime·sem_wait(uint32 sema, uint timeout)
+TEXT runtime·sem_wait(SB),7,$0
+	MOVL	$42, AX		// sys_sem_wait;
+	MOVL	4(SP), DX
+	MOVL	8(SP), CX
+	INT $0X80
+	RET
+
+// uint32 runtime·sem_free(uint32 sema)
+TEXT runtime·sem_free(SB),7,$0
+	MOVL	$43, AX		// sys_sem_free;
+	MOVL	4(SP), DX
+	INT $0X80
 	RET
 
 // int32 clone(int32 flags, void *stack, M *m, G *g, void (*fn)(void));

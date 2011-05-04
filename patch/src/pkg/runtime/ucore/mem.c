@@ -65,7 +65,6 @@ runtime·SysMap(void *v, uintptr n)
 	if(sizeof(void*) == 8) {
 	        runtime·mmap((void*)&p, n, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_ANON|MAP_PRIVATE, -1, 0);
 		if(p != v) {
-			runtime·printf("runtime: address space conflict: map(%v) = %v\n", v, p);
 			runtime·throw("runtime: address space conflict");
 		}
 		return;

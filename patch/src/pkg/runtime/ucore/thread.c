@@ -9,146 +9,47 @@
 
 extern SigTab runtime·sigtab[];
 
-// Linux futex.
-//
-//	futexsleep(uint32 *addr, uint32 val)
-//	futexwakeup(uint32 *addr)
-//
-// Futexsleep atomically checks if *addr == val and if so, sleeps on addr.
-// Futexwakeup wakes up one thread sleeping on addr.
-// Futexsleep is allowed to wake up spuriously.
-
-enum
-{
-	FUTEX_WAIT = 0,
-	FUTEX_WAKE = 1,
-
-	EINTR = 4,
-	EAGAIN = 11,
-};
-
-// TODO(rsc): I tried using 1<<40 here but futex woke up (-ETIMEDOUT).
-// I wonder if the timespec that gets to the kernel
-// actually has two 32-bit numbers in it, so that
-// a 64-bit 1<<40 ends up being 0 seconds,
-// 1<<8 nanoseconds.
-static Timespec longtime =
-{
-	1<<30,	// 34 years
-	0
-};
-
-// Atomically,
-//	if(*addr == val) sleep
-// Might be woken up spuriously; that's allowed.
+// Thread-safe allocation of a semaphore.
+// Psema points at a kernel semaphore key.
+// It starts out zero, meaning no semaphore.
+// Fill it in, being careful of others calling initsema
+// simultaneously.
 static void
-futexsleep(uint32 *addr, uint32 val)
+initsema(uint32 *psema)
 {
-	// Some Linux kernels have a bug where futex of
-	// FUTEX_WAIT returns an internal error code
-	// as an errno.  Libpthread ignores the return value
-	// here, and so can we: as it says a few lines up,
-	// spurious wakeups are allowed.
-	runtime·futex(addr, FUTEX_WAIT, val, &longtime, nil, 0);
-}
+	uint32 sema;
 
-// If any procs are sleeping on addr, wake up at least one.
-static void
-futexwakeup(uint32 *addr)
-{
-	int64 ret;
-
-	ret = runtime·futex(addr, FUTEX_WAKE, 1, nil, nil, 0);
-
-	if(ret >= 0)
+	if(*psema != 0)	// already have one
 		return;
 
-	// I don't know that futex wakeup can return
-	// EAGAIN or EINTR, but if it does, it would be
-	// safe to loop and call futex again.
-
-	runtime·prints("futexwakeup addr=");
-	runtime·printpointer(addr);
-	runtime·prints(" returned ");
-	runtime·printint(ret);
-	runtime·prints("\n");
-	*(int32*)0x1006 = 0x1006;
-}
-
-
-// Lock and unlock.
-//
-// The lock state is a single 32-bit word that holds
-// a 31-bit count of threads waiting for the lock
-// and a single bit (the low bit) saying whether the lock is held.
-// The uncontended case runs entirely in user space.
-// When contention is detected, we defer to the kernel (futex).
-//
-// A reminder: compare-and-swap runtime·cas(addr, old, new) does
-//	if(*addr == old) { *addr = new; return 1; }
-//	else return 0;
-// but atomically.
-
-static void
-futexlock(Lock *l)
-{
-	uint32 v;
-
-again:
-	v = l->key;
-	if((v&1) == 0){
-		if(runtime·cas(&l->key, v, v|1)){
-			// Lock wasn't held; we grabbed it.
-			return;
-		}
-		goto again;
+	sema = runtime·sem_init(0);
+	
+	// [MARK-PETER] runtime.cas:
+	// if (*psema == 0) {
+	//   *psema = sema;
+	//   return true;
+	// }
+	// else return false;
+	if(!runtime·cas(psema, 0, sema)){
+		// Someone else filled it in.  Use theirs.
+		runtime·sem_free(sema);
+		return;
 	}
-
-	// Lock was held; try to add ourselves to the waiter count.
-	if(!runtime·cas(&l->key, v, v+2))
-		goto again;
-
-	// We're accounted for, now sleep in the kernel.
-	//
-	// We avoid the obvious lock/unlock race because
-	// the kernel won't put us to sleep if l->key has
-	// changed underfoot and is no longer v+2.
-	//
-	// We only really care that (v&1) == 1 (the lock is held),
-	// and in fact there is a futex variant that could
-	// accomodate that check, but let's not get carried away.)
-	futexsleep(&l->key, v+2);
-
-	// We're awake: remove ourselves from the count.
-	for(;;){
-		v = l->key;
-		if(v < 2)
-			runtime·throw("bad lock key");
-		if(runtime·cas(&l->key, v, v-2))
-			break;
-	}
-
-	// Try for the lock again.
-	goto again;
 }
 
-static void
-futexunlock(Lock *l)
-{
-	uint32 v;
+// Blocking locks.
 
-	// Atomically get value and clear lock bit.
-again:
-	v = l->key;
-	if((v&1) == 0)
-		runtime·throw("unlock of unlocked lock");
-	if(!runtime·cas(&l->key, v, v&~1))
-		goto again;
+// Implement Locks, using semaphores.
+// l->key is the number of threads who want the lock.
+// In a race, one thread increments l->key from 0 to 1
+// and the others increment it from >0 to >1.  The thread
+// who does the 0->1 increment gets the lock, and the
+// others wait on the semaphore.  When the 0->1 thread
+// releases the lock by decrementing l->key, l->key will
+// be >0, so it will increment the semaphore to wake up
+// one of the others.  This is the same algorithm used
+// in Plan 9's user-level locks.
 
-	// If there were waiters, wake one.
-	if(v & ~1)
-		futexwakeup(&l->key);
-}
 
 void
 runtime·lock(Lock *l)
@@ -156,7 +57,13 @@ runtime·lock(Lock *l)
 	if(m->locks < 0)
 		runtime·throw("lock count");
 	m->locks++;
-	futexlock(l);
+	
+	if(runtime·xadd(&l->key, 1) > 1) {	// someone else has it; wait
+		// Allocate semaphore if needed.
+		if(l->sema == 0)
+			initsema(&l->sema);
+		runtime·sem_wait(l->sema, 0);
+	}
 }
 
 void
@@ -165,45 +72,22 @@ runtime·unlock(Lock *l)
 	m->locks--;
 	if(m->locks < 0)
 		runtime·throw("lock count");
-	futexunlock(l);
+	
+	if(runtime·xadd(&l->key, -1) > 0) {	// someone else is waiting
+		// Allocate semaphore if needed.
+		if(l->sema == 0)
+			initsema(&l->sema);
+		runtime·sem_post(l->sema);
+	}
 }
 
 void
-runtime·destroylock(Lock*)
+runtime·destroylock(Lock *l)
 {
-}
-
-
-// One-time notifications.
-//
-// Since the lock/unlock implementation already
-// takes care of sleeping in the kernel, we just reuse it.
-// (But it's a weird use, so it gets its own interface.)
-//
-// We use a lock to represent the event:
-// unlocked == event has happened.
-// Thus the lock starts out locked, and to wait for the
-// event you try to lock the lock.  To signal the event,
-// you unlock the lock.
-
-void
-runtime·noteclear(Note *n)
-{
-	n->lock.key = 0;	// memset(n, 0, sizeof *n)
-	futexlock(&n->lock);
-}
-
-void
-runtime·notewakeup(Note *n)
-{
-	futexunlock(&n->lock);
-}
-
-void
-runtime·notesleep(Note *n)
-{
-	futexlock(&n->lock);
-	futexunlock(&n->lock);	// Let other sleepers find out too.
+	if(l->sema != 0) {
+		runtime·sem_free(l->sema);
+		l->sema = 0;
+	}
 }
 
 
@@ -277,6 +161,53 @@ runtime·minit(void)
 	m->gsignal = runtime·malg(32*1024);	// OS X wants >=8K, Linux >=2K
 	runtime·signalstack(m->gsignal->stackguard - StackGuard, 32*1024);
 }
+
+// User-level semaphore implementation:
+// try to do the operations in user space on u,
+// but when it's time to block, fall back on the kernel semaphore k.
+// This is the same algorithm used in Plan 9.
+void
+runtime·usemacquire(Usema *s)
+{
+	if((int32)runtime·xadd(&s->u, -1) < 0) {
+		if(s->k == 0)
+			initsema(&s->k);
+		runtime·sem_wait(s->k, 0);
+	}
+}
+
+void
+runtime·usemrelease(Usema *s)
+{
+	if((int32)runtime·xadd(&s->u, 1) <= 0) {
+		if(s->k == 0)
+			initsema(&s->k);
+		runtime·sem_post(s->k);
+	}
+}
+
+
+// Event notifications.
+void
+runtime·noteclear(Note *n)
+{
+	n->wakeup = 0;
+}
+
+void
+runtime·notesleep(Note *n)
+{
+	while(!n->wakeup)
+		runtime·usemacquire(&n->sema);
+}
+
+void
+runtime·notewakeup(Note *n)
+{
+	n->wakeup = 1;
+	runtime·usemrelease(&n->sema);
+}
+
 
 void
 runtime·sigpanic(void)
