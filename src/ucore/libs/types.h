@@ -3,7 +3,7 @@
 
 #define DEBUG_PRINT_SYSCALL_NUM
 //#define DEBUG_PRINT_DO_MMAP
-//#define DEBUG_PRINT_SET_LDT
+#define DEBUG_PRINT_SET_LDT
 
 
 #ifndef NULL

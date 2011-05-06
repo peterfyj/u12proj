@@ -22,7 +22,7 @@ initsema(uint32 *psema)
 	if(*psema != 0)	// already have one
 		return;
 
-	sema = runtime·sem_init(0);
+	sema = runtime·sem_init(1);
 	
 	// [MARK-PETER] runtime.cas:
 	// if (*psema == 0) {
