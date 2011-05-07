@@ -1,5 +1,9 @@
+#!/usr/bin/env bash
+# Do not compile Go;
+NO_GO=false
+
 # Get current directory;
-CURRENT=$(pwd)
+CURRENT=`pwd`
 
 # Packages that needed to be partly recompiled;
 BUILD_PKG="runtime\
@@ -29,9 +33,31 @@ TEST_SUIT="hw1\
 		   goroutines\
 		   peter"
 
-# Compile Go;
-cd $CURRENT/src/go/src/ 
-./all.bash 
+while
+	test $1
+do
+	case $1 in
+	--help)
+		echo "parameters:"
+		echo "	-ng: Do not compile the entire Go"
+		exit
+		;;
+	-ng)
+		NO_GO=true
+		;;
+	*)
+		echo "'$1' not recognized."
+		exit
+		;;
+	esac
+	shift
+done
+
+if test !$NO_GO; then
+	# Compile Go;
+	cd $CURRENT/src/go/src/
+	./all.bash 
+fi
 
 # Patch Go with our work;
 cp $CURRENT/patch/src/ $CURRENT/src/go/ -R
