@@ -62,7 +62,7 @@ runtime·lock(Lock *l)
 		// Allocate semaphore if needed.
 		if(l->sema == 0)
 			initsema(&l->sema);
-		runtime·sem_wait(l->sema, 0);
+		runtime·sem_wait(l->sema, ~0);
 	}
 }
 
@@ -172,7 +172,7 @@ runtime·usemacquire(Usema *s)
 	if((int32)runtime·xadd(&s->u, -1) < 0) {
 		if(s->k == 0)
 			initsema(&s->k);
-		runtime·sem_wait(s->k, 0);
+		runtime·sem_wait(s->k, ~0);
 	}
 }
 

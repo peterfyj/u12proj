@@ -181,7 +181,7 @@ TEXT runtime·clone(SB),7,$0
 	INT	$3
 
 	// Initialize AX to Linux tid
-	MOVL	$224, AX
+	MOVL	$18, AX
 	INT	$0x80
 
 	// In child on new stack.  Reload registers (paranoia).
