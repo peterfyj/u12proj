@@ -53,7 +53,7 @@ do
 	shift
 done
 
-if test !$NO_GO; then
+if !$NO_GO; then
 	# Compile Go;
 	cd $CURRENT/src/go/src/
 	./all.bash 
