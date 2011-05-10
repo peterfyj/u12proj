@@ -211,7 +211,7 @@ trap_dispatch(struct trapframe *tf) {
     default:
         print_trapframe(tf);
         if (current != NULL) {
-            cprintf("unhandled trap.\n");
+            cprintf("unhandled trap %d.\n", tf->tf_trapno);
             do_exit(-E_KILLED);
         }
         panic("unexpected trap in kernel.\n");

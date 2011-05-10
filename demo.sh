@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # Do not compile Go;
-NO_GO=false
+NO_GO=
 
 # Get current directory;
 CURRENT=`pwd`
@@ -43,7 +43,7 @@ do
 		exit
 		;;
 	-ng)
-		NO_GO=true
+		NO_GO=1
 		;;
 	*)
 		echo "'$1' not recognized."
@@ -53,7 +53,8 @@ do
 	shift
 done
 
-if !$NO_GO; then
+if ! test $NO_GO
+then
 	# Compile Go;
 	cd $CURRENT/src/go/src/
 	./all.bash 
