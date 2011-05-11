@@ -15,14 +15,14 @@ extern SigTab runtime·sigtab[];
 // Fill it in, being careful of others calling initsema
 // simultaneously.
 static void
-initsema(uint32 *psema)
+initsema(uint32 *psema, uint32 value)
 {
 	uint32 sema;
 
 	if(*psema != 0)	// already have one
 		return;
 
-	sema = runtime·sem_init(1);
+	sema = runtime·sem_init(value);
 	
 	// [MARK-PETER] runtime.cas:
 	// if (*psema == 0) {
@@ -61,8 +61,8 @@ runtime·lock(Lock *l)
 	if(runtime·xadd(&l->key, 1) > 1) {	// someone else has it; wait
 		// Allocate semaphore if needed.
 		if(l->sema == 0)
-			initsema(&l->sema);
-		runtime·sem_wait(l->sema, ~0);
+			initsema(&l->sema, 0);
+		runtime·sem_wait(l->sema, 0);
 	}
 }
 
@@ -76,7 +76,7 @@ runtime·unlock(Lock *l)
 	if(runtime·xadd(&l->key, -1) > 0) {	// someone else is waiting
 		// Allocate semaphore if needed.
 		if(l->sema == 0)
-			initsema(&l->sema);
+			initsema(&l->sema, 0);
 		runtime·sem_post(l->sema);
 	}
 }
@@ -171,8 +171,8 @@ runtime·usemacquire(Usema *s)
 {
 	if((int32)runtime·xadd(&s->u, -1) < 0) {
 		if(s->k == 0)
-			initsema(&s->k);
-		runtime·sem_wait(s->k, ~0);
+			initsema(&s->k, 0);
+		runtime·sem_wait(s->k, 0);
 	}
 }
 
@@ -181,7 +181,7 @@ runtime·usemrelease(Usema *s)
 {
 	if((int32)runtime·xadd(&s->u, 1) <= 0) {
 		if(s->k == 0)
-			initsema(&s->k);
+			initsema(&s->k, 0);
 		runtime·sem_post(s->k);
 	}
 }

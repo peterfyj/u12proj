@@ -143,16 +143,20 @@ sys_pgdir(uint32_t arg[]) {
 static uint32_t
 sys_sem_init(uint32_t arg[]) {
 #ifdef DEBUG_PRINT_SEMAPHORE
-	cprintf("sem_init from pid = %d.\n", current->pid);
+	cprintf("sem_init from pid = %d, value = %d\n", current->pid, (int)arg[0]);
 #endif
     int value = (int)arg[0];
-    return ipc_sem_init(value);
+    uint32_t ret = ipc_sem_init(value);
+#ifdef DEBUG_PRINT_SEMAPHORE
+	cprintf("sem_init return sema %d.\n", ret);
+#endif
+	return ret;
 }
 
 static uint32_t
 sys_sem_post(uint32_t arg[]) {
 #ifdef DEBUG_PRINT_SEMAPHORE
-	cprintf("sem_post from pid = %d.\n", current->pid);
+	cprintf("sem_post from pid = %d, posting sema %d.\n", current->pid, (int)arg[0]);
 #endif
     sem_t sem_id = (sem_t)arg[0];
     return ipc_sem_post(sem_id);
@@ -161,7 +165,7 @@ sys_sem_post(uint32_t arg[]) {
 static uint32_t
 sys_sem_wait(uint32_t arg[]) {
 #ifdef DEBUG_PRINT_SEMAPHORE
-	cprintf("sem_wait from pid = %d.\n", current->pid);
+	cprintf("sem_wait from pid = %d, waiting for sema %d.\n", current->pid, (int)arg[0]);
 #endif
     sem_t sem_id = (sem_t)arg[0];
     unsigned int timeout = (unsigned int)arg[1];
@@ -171,7 +175,7 @@ sys_sem_wait(uint32_t arg[]) {
 static uint32_t
 sys_sem_free(uint32_t arg[]) {
 #ifdef DEBUG_PRINT_SEMAPHORE
-	cprintf("sem_free from pid = %d.\n", current->pid);
+	cprintf("sem_free from pid = %d, freeing sema %d.\n", current->pid, (int)arg[0]);
 #endif
     sem_t sem_id = (sem_t)arg[0];
     return ipc_sem_free(sem_id);
