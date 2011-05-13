@@ -157,6 +157,56 @@ pgfault_handler(struct trapframe *tf) {
 
 static void
 trap_dispatch(struct trapframe *tf) {
+	static const char * const syscallnames[] = {
+		[SYS_exit]              "sys_exit",
+		[SYS_fork]              "sys_fork",
+		[SYS_wait]              "sys_wait",
+		[SYS_exec]              "sys_exec",
+		[SYS_clone]             "sys_clone",
+		[SYS_yield]             "sys_yield",
+		[SYS_kill]              "sys_kill",
+		[SYS_sleep]             "sys_sleep",
+		[SYS_gettime]           "sys_gettime",
+		[SYS_getpid]            "sys_getpid",
+		[SYS_brk]               "sys_brk",
+		[SYS_mmap]              "sys_mmap",
+		[SYS_munmap]            "sys_munmap",
+		[SYS_shmem]             "sys_shmem",
+		[SYS_putc]              "sys_putc",
+		[SYS_pgdir]             "sys_pgdir",
+		[SYS_sem_init]          "sys_sem_init",
+		[SYS_sem_post]          "sys_sem_post",
+		[SYS_sem_wait]          "sys_sem_wait",
+		[SYS_sem_free]          "sys_sem_free",
+		[SYS_sem_get_value]     "sys_sem_get_value",
+		[SYS_event_send]        "sys_event_send",
+		[SYS_event_recv]        "sys_event_recv",
+		[SYS_mbox_init]         "sys_mbox_init",
+		[SYS_mbox_send]         "sys_mbox_send",
+		[SYS_mbox_recv]         "sys_mbox_recv",
+		[SYS_mbox_free]         "sys_mbox_free",
+		[SYS_mbox_info]         "sys_mbox_info",
+		[SYS_open]              "sys_open",
+		[SYS_close]             "sys_close",
+		[SYS_read]              "sys_read",
+		[SYS_write]             "sys_write",
+		[SYS_seek]              "sys_seek",
+		[SYS_fstat]             "sys_fstat",
+		[SYS_fsync]             "sys_fsync",
+		[SYS_chdir]             "sys_chdir",
+		[SYS_getcwd]            "sys_getcwd",
+		[SYS_mkdir]             "sys_mkdir",
+		[SYS_link]              "sys_link",
+		[SYS_rename]            "sys_rename",
+		[SYS_unlink]            "sys_unlink",
+		[SYS_getdirentry]       "sys_getdirentry",
+		[SYS_dup]               "sys_dup",
+		[SYS_pipe]              "sys_pipe",
+		[SYS_mkfifo]            "sys_mkfifo",
+		[SYS_modify_ldt]		"sys_modify_ldt",
+		[SYS_gettimeofday]		"sys_gettimeofday",
+    };
+	
     char c;
 
     int ret;
@@ -186,7 +236,7 @@ trap_dispatch(struct trapframe *tf) {
 		if (tf->tf_regs.reg_eax != SYS_write && 
 				tf->tf_regs.reg_eax != SYS_read &&
 				tf->tf_regs.reg_eax != SYS_putc)
-			cprintf("Syscall [%d] detected!\n", tf->tf_regs.reg_eax);
+			cprintf("Syscall [%d] (%s) detected!\n", tf->tf_regs.reg_eax, syscallnames[tf->tf_regs.reg_eax]);
 #endif
         syscall();
         break;

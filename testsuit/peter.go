@@ -1,15 +1,15 @@
 package main
 
-//import (
+import (
 	//"fmt"
-	//"time"
-//)
+	"time"
+)
 
 var c chan int
 
 func ready(index int) {
-	//time.Sleep(5e9)
-	print("Hi.\n")
+	time.Sleep(5e9)
+	print(index)
 	c <- 1
 }
 

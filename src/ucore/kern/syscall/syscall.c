@@ -23,6 +23,9 @@ sys_modify_ldt(uint32_t arg[])
 
 static uint32_t
 sys_exit(uint32_t arg[]) {
+#ifdef DEBUG_PRINT_EXIT
+	cprintf("Pid[%d] calling exit...\n", current->pid);
+#endif
     int error_code = (int)arg[0];
     return do_exit(error_code);
 }
@@ -67,6 +70,9 @@ sys_yield(uint32_t arg[]) {
 
 static uint32_t
 sys_sleep(uint32_t arg[]) {
+#ifdef DEBUG_PRINT_SLEEP
+	cprintf("Sleep for %d ms...\n", (unsigned int)arg[0]);
+#endif
     unsigned int time = (unsigned int)arg[0];
     return do_sleep(time);
 }
@@ -87,7 +93,7 @@ sys_gettimeofday(uint32_t arg[]) {
 	int64_t *sec = (int64_t *)arg[0];
 	int32_t *usec = (int32_t *)arg[1];
 	if (sec)
-		*sec = (int64_t)ticks % 100;
+		*sec = (int64_t)ticks / 100;
 	if (usec)
 		*usec = (ticks % 100) * 10000;
 	return 0;

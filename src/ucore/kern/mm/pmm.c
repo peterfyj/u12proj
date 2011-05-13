@@ -87,6 +87,10 @@ static struct segdesc gdt[] = {
 	[8] 		= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
 	[9] 		= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
 	[10] 		= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
+	[11]		= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
+	[12]		= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
+	[13]		= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
+	[14]		= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
 };
 
 static struct pseudodesc gdt_pd = {

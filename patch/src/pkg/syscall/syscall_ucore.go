@@ -185,8 +185,7 @@ func Wait4(pid int, wstatus *WaitStatus, options int, rusage *Rusage) (wpid int,
 }
 
 func Sleep(nsec int64) (errno int) {
-	tv := NsecToTimeval(nsec)
-	_, err := Select(0, nil, nil, nil, &tv)
+	err := UcoreSleep(nsec);
 	return err
 }
 
@@ -724,6 +723,7 @@ func Reboot(cmd int) (errno int) {
 //sys	Mknodat(dirfd int, path string, mode uint32, dev int) (errno int)
 //sys	Mount(source string, target string, fstype string, flags int, data string) (errno int)
 //sys	Nanosleep(time *Timespec, leftover *Timespec) (errno int)
+//sys	UcoreSleep(nsec int64) (errno int)
 //sys	Pause() (errno int)
 //sys	PivotRoot(newroot string, putold string) (errno int) = SYS_PIVOT_ROOT
 //sys	Read(fd int, p []byte) (n int, errno int)
