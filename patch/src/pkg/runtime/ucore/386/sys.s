@@ -260,7 +260,7 @@ TEXT runtime·sigaltstack(SB),7,$-8
 
 // setldt(int entry, int address, int limit)
 TEXT runtime·setldt(SB),7,$32
-	MOVL	entry+0(FP), BX	// entry
+	MOVL	$6, BX	// entry
 	MOVL	address+4(FP), CX	// base address
 
 	/*
@@ -293,8 +293,8 @@ TEXT runtime·setldt(SB),7,$32
 	MOVL	$147, AX	// syscall - modify_ldt
 	INT	$0x80
 
-	// compute segment selector - (entry*8+7)
-	MOVL	entry+0(FP), AX
+	// compute segment selector - (entry*8+3)
+	MOVL	$6, AX
 	SHLL	$3, AX
 	ADDL	$3, AX
 	MOVW	AX, GS

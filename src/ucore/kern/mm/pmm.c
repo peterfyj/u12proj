@@ -82,15 +82,7 @@ static struct segdesc gdt[] = {
 	[SEG_UTEXT] = SEG(STA_X | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
 	[SEG_UDATA] = SEG(STA_W, 0x0, 0xFFFFFFFF, DPL_USER),
 	[SEG_TSS]	= SEG_NULL,
-	[6]			= SEG_NULL,
-	[7]			= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
-	[8] 		= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
-	[9] 		= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
-	[10] 		= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
-	[11]		= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
-	[12]		= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
-	[13]		= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
-	[14]		= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
+	[SEG_TLS]	= SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER),
 };
 
 static struct pseudodesc gdt_pd = {
@@ -144,15 +136,19 @@ gdt_init(void) {
     ltr(GD_TSS);
 }
 
-void set_ldt(user_desc* p, uint32_t bytecount)
+void pad_ldt(struct segdesc* pseg)
+{
+	gdt[SEG_TLS] = *pseg;
+	asm volatile ("lgdt (%0)" :: "r" (&gdt_pd));
+}
+
+void set_ldt(uint64_t base, uint32_t limit)
 {
 #ifdef DEBUG_PRINT_SET_LDT
-	cprintf("set_ldt: entry = 0x%x base = 0x%x limit = 0x%x\n",
-			p->entry_number,
-			p->base_addr,
-			p->limit);
+	cprintf("set_ldt: entry = SEG_TLS base = 0x%16x ", base);
+	cprintf("limit = 0x%08x.\n", limit);
 #endif
-	gdt[p->entry_number] = SEG(STA_W | STA_R, p->base_addr, p->limit, DPL_USER);
+	gdt[SEG_TLS] = SEG(STA_W | STA_R, base, limit, DPL_USER);
 	asm volatile ("lgdt (%0)" :: "r" (&gdt_pd));
 }
 

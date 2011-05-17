@@ -14,7 +14,7 @@ func ready(index int) {
 }
 
 func main() {
-	total := 5
+	total := 10
 	c = make(chan int)
 	for i := 0; i < total; i++ {
 		go ready(i + 1)

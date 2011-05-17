@@ -81,7 +81,7 @@ sys_yield(uint32_t arg[]) {
 static uint32_t
 sys_sleep(uint32_t arg[]) {
 #ifdef DEBUG_PRINT_SLEEP
-	cprintf("Sleep for %d ms...\n", (unsigned int)arg[0]);
+	cprintf("Sleep for %d ms...\n", (unsigned int)arg[0] * 10);
 #endif
     unsigned int time = (unsigned int)arg[0];
     return do_sleep(time);

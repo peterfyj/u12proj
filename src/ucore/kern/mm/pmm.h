@@ -52,7 +52,8 @@ struct Page *get_page(pde_t *pgdir, uintptr_t la, pte_t **ptep_store);
 void page_remove(pde_t *pgdir, uintptr_t la);
 int page_insert(pde_t *pgdir, struct Page *page, uintptr_t la, uint32_t perm);
 
-void set_ldt(user_desc* p, uint32_t bytecount);
+void pad_ldt(struct segdesc* pseg);
+void set_ldt(uint64_t base, uint32_t limit);
 void load_esp0(uintptr_t esp0);
 void tlb_invalidate(pde_t *pgdir, uintptr_t la);
 struct Page *pgdir_alloc_page(pde_t *pgdir, uintptr_t la, uint32_t perm);

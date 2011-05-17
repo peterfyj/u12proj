@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <sem.h>
 #include <event.h>
+#include <mmu.h>
 
 // process's state in his life cycle
 enum proc_state {
@@ -70,6 +71,7 @@ struct proc_struct {
     sem_queue_t *sem_queue;                     // the user semaphore queue which process waits
     event_t event_box;                          // the event which process waits   
     struct fs_struct *fs_struct;                // the file related info(pwd, files_count, files_array, fs_semaphore) of process
+	struct segdesc tls;							// Thread local storage: the per-thread segdesc;
 };
 
 #define PF_EXITING                  0x00000001      // getting shutdown

@@ -211,6 +211,7 @@ proc_run(struct proc_struct *proc) {
         local_intr_save(intr_flag);
         {
             current = proc;
+			pad_ldt(&next->tls);
             load_esp0(next->kstack + KSTACKSIZE);
             lcr3(next->cr3);
 			switch_to(&(prev->context), &(next->context));
@@ -506,6 +507,7 @@ do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
         goto fork_out;
     }
 
+	proc->tls = SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER);
     proc->parent = current;
     list_init(&(proc->thread_group));
     assert(current->wait_state == 0);
@@ -1280,12 +1282,16 @@ int
 do_modify_ldt(int func, void* ptr, uint32_t bytecount)
 {
 	user_desc* p = (user_desc*)ptr;
+	unsigned long base = p->base_addr;
+	unsigned int limit = p->limit;
 	switch (func) 
 	{
 		case 0:
 			break;
 		case 1:
-			set_ldt(p, bytecount);
+			p->entry_number = SEG_TLS;
+			current->tls = SEG(STA_W | STA_R, base, limit, DPL_USER);
+			set_ldt(base, limit);
 			break;
 	}
 	return 0;
@@ -1410,6 +1416,8 @@ proc_init(void) {
         panic("cannot alloc idleproc.\n");
     }
 
+	idleproc->tls = SEG(STA_W | STA_R, 0x0, 0xFFFFFFFF, DPL_USER);
+	
     idleproc->pid = 0;
     idleproc->state = PROC_RUNNABLE;
     idleproc->kstack = (uintptr_t)bootstack;
