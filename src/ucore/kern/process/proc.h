@@ -105,6 +105,7 @@ void cpu_idle(void) __attribute__((noreturn));
 struct proc_struct *find_proc(int pid);
 int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf);
 int do_exit(int error_code);
+int do_exit_group(int error_code);
 int do_execve(const char *name, int argc, const char **argv);
 int do_yield(void);
 int do_wait(int pid, int *code_store);

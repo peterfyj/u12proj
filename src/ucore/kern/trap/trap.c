@@ -157,6 +157,7 @@ pgfault_handler(struct trapframe *tf) {
 
 static void
 trap_dispatch(struct trapframe *tf) {
+#ifdef DEBUG_PRINT_SYSCALL_NUM
 	static const char * const syscallnames[] = {
 		[SYS_exit]              "sys_exit",
 		[SYS_fork]              "sys_fork",
@@ -205,7 +206,9 @@ trap_dispatch(struct trapframe *tf) {
 		[SYS_mkfifo]            "sys_mkfifo",
 		[SYS_modify_ldt]		"sys_modify_ldt",
 		[SYS_gettimeofday]		"sys_gettimeofday",
+		[SYS_exit_group]		"SYS_exit_group",
     };
+#endif
 	
     char c;
 

@@ -1,15 +1,15 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	"time"
 )
 
 var c chan int
 
 func ready(index int) {
-	time.Sleep(5e9)
-	print(index)
+	time.Sleep(int64(index) * 1e8)
+	fmt.Println(index)
 	c <- 1
 }
 
@@ -17,7 +17,7 @@ func main() {
 	total := 5
 	c = make(chan int)
 	for i := 0; i < total; i++ {
-		go ready(i)
+		go ready(i + 1)
 	}
 	for i := 0; i < total; i++ {
 		<- c

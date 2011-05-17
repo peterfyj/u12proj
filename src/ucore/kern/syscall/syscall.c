@@ -31,6 +31,12 @@ sys_exit(uint32_t arg[]) {
 }
 
 static uint32_t
+sys_exit_group(uint32_t arg[]) {
+	int error_code = (int)arg[0];
+	return do_exit_group(error_code);
+}
+
+static uint32_t
 sys_fork(uint32_t arg[]) {
     struct trapframe *tf = current->tf;
     uintptr_t stack = tf->tf_esp;
@@ -60,7 +66,11 @@ sys_clone(uint32_t arg[]) {
     if (stack == 0) {
         stack = tf->tf_esp;
     }
-    return do_fork(clone_flags, stack, tf);
+    uint32_t ret = do_fork(clone_flags, stack, tf);
+#ifdef DEBUG_PRINT_CLONE
+	cprintf("[pid %d] clones [pid %d]\n", current->pid, ret);
+#endif
+	return ret;
 }
 
 static uint32_t
@@ -409,6 +419,7 @@ static uint32_t (*syscalls[])(uint32_t arg[]) = {
     [SYS_mkfifo]            sys_mkfifo,
 	[SYS_modify_ldt]		sys_modify_ldt,
 	[SYS_gettimeofday]		sys_gettimeofday,
+	[SYS_exit_group]		sys_exit_group,
 };
 
 #define NUM_SYSCALLS        ((sizeof(syscalls)) / (sizeof(syscalls[0])))

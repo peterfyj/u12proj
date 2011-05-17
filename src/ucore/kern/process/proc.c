@@ -557,6 +557,76 @@ bad_fork_cleanup_proc:
     goto fork_out;
 }
 
+int
+do_exit_group(int error_code) {
+	bool intr_flag;
+	local_intr_save(intr_flag);
+    {
+		struct proc_struct *del;
+		list_entry_t* le = &current->thread_group;
+		do {
+			del = le2proc(le, thread_group);
+			
+			if (del == idleproc) {
+				panic("idleproc exit.\n");
+			}
+			if (del == initproc) {
+				panic("initproc exit.\n");
+			}
+			
+			// Release vmm related;
+			struct mm_struct *mm = del->mm;
+			if (mm != NULL) {
+				lcr3(boot_cr3);
+				if (mm_count_dec(mm) == 0) {
+					exit_mmap(mm);
+					put_pgdir(mm);
+					list_del(&(mm->proc_mm_link));
+					mm_destroy(mm);
+				}
+				del->mm = NULL;
+			}
+			put_fs(del);
+			put_sem_queue(del);
+			del->state = PROC_ZOMBIE;
+			del->exit_code = error_code;
+			
+			struct proc_struct *proc, *parent;
+			proc = parent = del->parent;
+			do {
+				if (proc->wait_state == WT_CHILD) {
+					wakeup_proc(proc);
+				}
+				proc = next_thread(proc);
+			} while (proc != parent);
+			
+			if ((parent = next_thread(del)) == del) {
+				parent = initproc;
+			}
+			while (del->cptr != NULL) {
+				proc = del->cptr;
+				del->cptr = proc->optr;
+			
+				proc->yptr = NULL;
+				if ((proc->optr = parent->cptr) != NULL) {
+					parent->cptr->yptr = proc;
+				}
+				proc->parent = parent;
+				parent->cptr = proc;
+				if (proc->state == PROC_ZOMBIE) {
+					if (parent->wait_state == WT_CHILD) {
+						wakeup_proc(parent);
+					}
+				}
+			}
+			wakeup_queue(&(del->event_box.wait_queue), WT_INTERRUPTED, 1);
+		} while ((le = list_next(le)) != &current->thread_group);
+	}
+	local_intr_restore(intr_flag);
+	schedule();
+	panic("do_exit_group will not return!\n");
+}
+
 // do_exit - called by sys_exit
 //   1. call exit_mmap & put_pgdir & mm_destroy to free the almost all memory space of process
 //   2. set process' state as PROC_ZOMBIE, then call wakeup_proc(parent) to ask parent reclaim itself.

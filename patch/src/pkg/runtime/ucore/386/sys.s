@@ -9,7 +9,7 @@
 #include "386/asm.h"
 
 TEXT runtime·exit(SB),7,$0
-	MOVL	$1, AX	// syscall number
+	MOVL	$149, AX	// syscall number
 	MOVL	4(SP), DX
 	INT	$0x80
 	INT $3	// not reached
