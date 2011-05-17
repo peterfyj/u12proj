@@ -49,6 +49,6 @@ func main() {
 		if x := <-primes; x != a[i] {
 			println(x, " != ", a[i])
 			panic("fail")
-		} 
+		}
 	}
 }

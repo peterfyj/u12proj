@@ -206,7 +206,7 @@ trap_dispatch(struct trapframe *tf) {
 		[SYS_mkfifo]            "sys_mkfifo",
 		[SYS_modify_ldt]		"sys_modify_ldt",
 		[SYS_gettimeofday]		"sys_gettimeofday",
-		[SYS_exit_group]		"SYS_exit_group",
+		[SYS_exit_group]		"sys_exit_group",
     };
 #endif
 	

@@ -24,8 +24,12 @@ BUILD_PKG="runtime\
 		   container/heap\
 		   path/filepath\
 		   io/ioutil\
-		   time"
-
+		   time\
+		   flag\
+		   bufio\
+		   container/ring\
+		   template\
+		   container/vector"
 
 while
 	test $1
