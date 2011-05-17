@@ -26,12 +26,6 @@ BUILD_PKG="runtime\
 		   io/ioutil\
 		   time"
 
-# The test cases;
-TEST_SUIT="hw1\
-		   hw2\
-		   sieve1\
-		   goroutines\
-		   peter"
 
 while
 	test $1
@@ -84,6 +78,8 @@ make install
 
 # Compile test cases;
 cd $CURRENT/testsuit/
+# Get all test cases;
+TEST_SUIT=`ls *.go | sed s'/.go//g'`
 rm *.out *.s *.8
 for i in $TEST_SUIT
 do
