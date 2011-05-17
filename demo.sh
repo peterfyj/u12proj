@@ -28,8 +28,8 @@ BUILD_PKG="runtime\
 		   flag\
 		   bufio\
 		   container/ring\
-		   template\
-		   container/vector"
+		   container/vector\
+		   template"
 
 while
 	test $1
