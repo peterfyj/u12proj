@@ -60,6 +60,7 @@ struct run_queue {
 #define le2rq(le, member)           \
     to_struct((le), struct run_queue, member)
 
+void del_proc_timer(struct proc_struct *proc);
 void sched_init(void);
 void wakeup_proc(struct proc_struct *proc);
 void schedule(void);

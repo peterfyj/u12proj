@@ -568,7 +568,7 @@ do_exit_group(int error_code) {
 		list_entry_t* le = &current->thread_group;
 		do {
 			del = le2proc(le, thread_group);
-			
+			del_proc_timer(del);
 			if (del == idleproc) {
 				panic("idleproc exit.\n");
 			}

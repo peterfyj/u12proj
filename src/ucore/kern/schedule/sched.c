@@ -144,6 +144,19 @@ del_timer(timer_t *timer) {
     local_intr_restore(intr_flag);
 }
 
+// Interrupt is off on access;
+void
+del_proc_timer(struct proc_struct *proc) {
+	list_entry_t *le = &timer_list;
+	while ((le = list_next(le)) != &timer_list) {
+		timer_t *timer = le2timer(le, timer_link);
+		if (timer->proc == proc) {
+			le = list_prev(le);
+			list_del_init(&(timer->timer_link));
+		}
+	}
+}
+
 void
 run_timer_list(void) {
     bool intr_flag;

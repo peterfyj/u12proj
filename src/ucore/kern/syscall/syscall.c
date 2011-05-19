@@ -32,6 +32,9 @@ sys_exit(uint32_t arg[]) {
 
 static uint32_t
 sys_exit_group(uint32_t arg[]) {
+#ifdef DEBUG_PRINT_EXIT_GROUP
+	cprintf("Pid[%d] calling exit_group...\n", current->pid);
+#endif
 	int error_code = (int)arg[0];
 	return do_exit_group(error_code);
 }
