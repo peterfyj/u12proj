@@ -8,8 +8,8 @@ const (
 	SYS_UCORE_SLEEP			   = 11
 	SYS_UCORE_PUTC             = 30
 	SYS_UCORE_GETTIMEOFDAY	   = 148
+	SYS_UCORE_EXIT_GROUP	   = 149
 
-	
 	// The original linux's
 	SYS_RESTART_SYSCALL        = 0
 	SYS_EXIT                   = 1
