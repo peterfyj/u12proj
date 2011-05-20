@@ -8,7 +8,7 @@ import (
 var c chan int
 
 func ready(index int) {
-	time.Sleep(int64(index) * 1e8)
+	time.Sleep(int64(index) * 1e9)
 	fmt.Println(index)
 	c <- 1
 }
