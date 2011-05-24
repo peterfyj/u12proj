@@ -290,7 +290,10 @@ trap(struct trapframe *tf) {
         current->tf = otf;
         if (!in_kernel) {
             if (current->flags & PF_EXITING) {
-                do_exit(-E_KILLED);
+				if (current->exit_code == -E_KILLED)
+					do_exit(-E_KILLED);
+				else
+					do_exit(current->exit_code);
             }
             if (current->need_resched) {
                 schedule();

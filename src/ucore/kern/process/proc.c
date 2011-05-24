@@ -1,3 +1,4 @@
+
 #include <proc.h>
 #include <slab.h>
 #include <string.h>
@@ -561,72 +562,27 @@ bad_fork_cleanup_proc:
 
 int
 do_exit_group(int error_code) {
-	bool intr_flag;
+    bool intr_flag;
 	local_intr_save(intr_flag);
     {
-		struct proc_struct *del;
-		list_entry_t* le = &current->thread_group;
-		do {
-			del = le2proc(le, thread_group);
-			del_proc_timer(del);
-			if (del == idleproc) {
-				panic("idleproc exit.\n");
-			}
-			if (del == initproc) {
-				panic("initproc exit.\n");
-			}
-			
-			// Release vmm related;
-			struct mm_struct *mm = del->mm;
-			if (mm != NULL) {
-				lcr3(boot_cr3);
-				if (mm_count_dec(mm) == 0) {
-					exit_mmap(mm);
-					put_pgdir(mm);
-					list_del(&(mm->proc_mm_link));
-					mm_destroy(mm);
-				}
-				del->mm = NULL;
-			}
-			put_fs(del);
-			put_sem_queue(del);
-			del->state = PROC_ZOMBIE;
-			del->exit_code = error_code;
-			
-			struct proc_struct *proc, *parent;
-			proc = parent = del->parent;
-			do {
-				if (proc->wait_state == WT_CHILD) {
-					wakeup_proc(proc);
-				}
-				proc = next_thread(proc);
-			} while (proc != parent);
-			
-			if ((parent = next_thread(del)) == del) {
-				parent = initproc;
-			}
-			while (del->cptr != NULL) {
-				proc = del->cptr;
-				del->cptr = proc->optr;
-			
-				proc->yptr = NULL;
-				if ((proc->optr = parent->cptr) != NULL) {
-					parent->cptr->yptr = proc;
-				}
-				proc->parent = parent;
-				parent->cptr = proc;
-				if (proc->state == PROC_ZOMBIE) {
-					if (parent->wait_state == WT_CHILD) {
-						wakeup_proc(parent);
-					}
-				}
-			}
-			wakeup_queue(&(del->event_box.wait_queue), WT_INTERRUPTED, 1);
-		} while ((le = list_next(le)) != &current->thread_group);
+        list_entry_t *list = &(current->thread_group);
+        if (!list_empty(list)) {
+            list_entry_t *le = list;
+            while ((le = list_next(le)) != list) {
+                do_kill(le2proc(le, thread_group)->pid);
+				/*
+				** In do_kill, exit_code is set to -E_KILLED;
+				** here we overwrite it so that when the thread is
+				** actually being killed, it would pass do_exit the 
+				** right error_code;
+				*/
+				le2proc(le, thread_group)->exit_code = error_code;
+            }
+        }        
 	}
 	local_intr_restore(intr_flag);
-	schedule();
-	panic("do_exit_group will not return!\n");
+	do_exit(error_code);	
+	panic("do_exit_group return!");
 }
 
 // do_exit - called by sys_exit
@@ -1085,6 +1041,7 @@ do_kill(int pid) {
     struct proc_struct *proc;
     if ((proc = find_proc(pid)) != NULL) {
         proc->flags |= PF_EXITING;
+		proc->exit_code = -E_KILLED;
         if (proc->wait_state & WT_INTERRUPTED) {
             wakeup_proc(proc);
         }

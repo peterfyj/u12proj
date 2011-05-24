@@ -60,7 +60,7 @@ func ssender(c chan string, strobe chan bool) {
 	strobe <- true
 }
 
-var ticker = time.Tick(10 * 1000 * 1000) // 10 ms
+var ticker = time.Tick(10 * 1000) // 10 us
 func sleep() {
 	<-ticker
 	<-ticker
@@ -69,7 +69,7 @@ func sleep() {
 	runtime.Gosched()
 }
 
-const maxTries = 10000 // Up to 100s per test.
+const maxTries = 10000 // Up to 100ms per test.
 
 func main() {
 	var i32 int32
