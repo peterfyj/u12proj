@@ -114,16 +114,24 @@ then
 		CURRENT_TEST_DIR=`readlink -f "$CURRENT/src/ucore/disk0/testsuit/$i"`
 		cd "$CURRENT_TEST_DIR"
 
-		# Get cases in current directory;
-		TEST_SUIT=`ls *.go | sed s'/.go//g'`
-		for j in $TEST_SUIT
-		do
-			echo "[Testsuit] $j.go"
-			echo "./$j.out" >> testall.sh
-			8g "$j.go"
-			8l -o "$j.out" "$j.8"
-			rm "$j.8" "$j.go"
-		done
+		if test -e Makefile
+		then
+			# Makefile exists, compile with it;
+			make all
+			make clean
+		else
+			# Makefile missing, compile each by default;
+			# Get cases in current directory;
+			TEST_SUIT=`ls *.go | sed s'/.go//g'`
+			for j in $TEST_SUIT
+			do
+				echo "[Testsuit] $j.go"
+				echo "./$j.out" >> testall.sh
+				8g "$j.go"
+				8l -o "$j.out" "$j.8"
+				rm "$j.8" "$j.go"
+			done
+		fi
 
 		rm -f "$CURRENT/src/ucore/bin/fs.img"
 	done
