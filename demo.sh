@@ -122,7 +122,7 @@ then
 		else
 			# Makefile missing, compile each by default;
 			# Get cases in current directory;
-			TEST_SUIT=`ls *.go | sed s'/.go//g'`
+			TEST_SUIT=`ls *.go 2>/dev/null | sed s'/.go//g'`
 			for j in $TEST_SUIT
 			do
 				echo "[Testsuit] $j.go"
