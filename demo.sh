@@ -32,7 +32,8 @@ BUILD_PKG="runtime\
 		   container/ring\
 		   container/vector\
 		   template\
-		   rand"
+		   rand\
+		   cmath"
 
 while
 	test $1
