@@ -6,6 +6,7 @@ package syscall
 const (
 	// For ucore
 	SYS_UCORE_SLEEP			   = 11
+	SYS_UCORE_KILL			   = 12
 	SYS_UCORE_PUTC             = 30
 	SYS_UCORE_GETTIMEOFDAY	   = 148
 	SYS_UCORE_EXIT_GROUP	   = 149
