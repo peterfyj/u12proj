@@ -674,7 +674,7 @@ load_icode_read(int fd, void *buf, size_t len, off_t offset) {
 }
 
 static int
-load_icode(int fd, int argc, char **kargv) {
+load_icode(int fd, int argc, char **kargv, int envc, char **kenv) {
     assert(argc >= 0 && argc <= EXEC_MAX_ARG_NUM);
     if (current->mm != NULL) {
         panic("load_icode: current->mm must be empty.\n");
@@ -803,13 +803,39 @@ load_icode(int fd, int argc, char **kargv) {
     current->cr3 = PADDR(mm->pgdir);
     lcr3(PADDR(mm->pgdir));
 
-    uintptr_t stacktop = USTACKTOP - argc * PGSIZE;
-    char **uargv = (char **)(stacktop - argc * sizeof(char *));
-    int i;
-    for (i = 0; i < argc; i ++) {
-        uargv[i] = strcpy((char *)(stacktop + i * PGSIZE), kargv[i]);
-    }
-    stacktop = (uintptr_t)uargv - sizeof(int);
+	
+	/**
+	 *		argc
+	 *		argv[]
+	 *		NULL
+	 *		env[]
+	 *		NULL
+	 *		argv
+	 *		env
+	 *				--- USTACKTOP
+	 */
+	
+	// stacktop: above env;
+    uintptr_t stacktop = USTACKTOP - envc * PGSIZE;
+	// u: above env[];
+	char **u = (char **)(stacktop - argc * PGSIZE - (envc + 1) * sizeof(char *));
+	int i;
+	// Set up env[] and env;
+	for (i = 0; i < envc; ++i) {
+		u[i] = strcpy((char *)(stacktop + i * PGSIZE), kenv[i]);
+	}
+	u[envc] = NULL;
+	// stacktop: above argv;
+	stacktop -= argc * PGSIZE;
+	// u: above argv[];
+	u = (char **)(stacktop - (envc + 1) * sizeof(char *) - (argc + 1) * sizeof(char *));
+	// Set up argv[] and argv;
+	for (i = 0; i < argc; ++i) {
+		u[i] = strcpy((char *)(stacktop + i * PGSIZE), kargv[i]);
+	}
+	u[argc] = NULL;
+	// stacktop: above argc;
+	stacktop = (uintptr_t)u - sizeof(int);
     *(int *)stacktop = argc;
 
     struct trapframe *tf = current->tf;
@@ -847,7 +873,7 @@ copy_kargv(struct mm_struct *mm, int argc, char **kargv, const char **argv) {
     if (!user_mem_check(mm, (uintptr_t)argv, sizeof(const char *) * argc, 0)) {
         return ret;
     }
-    for (i = 0; i < argc; i ++) {
+	for (i = 0; i < argc; i ++) {
         char *buffer;
         if ((buffer = kmalloc(EXEC_MAX_ARG_LEN + 1)) == NULL) {
             goto failed_nomem;
@@ -868,19 +894,24 @@ failed_cleanup:
 }
 
 int
-do_execve(const char *name, int argc, const char **argv) {
+do_execve(const char *name, int argc, const char **argv, const char **env) {
     static_assert(EXEC_MAX_ARG_LEN >= FS_MAX_FPATH_LEN);
     struct mm_struct *mm = current->mm;
     if (!(argc >= 1 && argc <= EXEC_MAX_ARG_NUM)) {
         return -E_INVAL;
     }
-
+	
     char local_name[PROC_NAME_LEN + 1];
     memset(local_name, 0, sizeof(local_name));
 
     char *kargv[EXEC_MAX_ARG_NUM];
+	char *kenv[EXEC_MAX_ENV_NUM];
     const char *path;
 
+	int envc = 0;
+	while (env[envc] != NULL)
+		++envc;
+	
     int ret = -E_INVAL;
 
     lock_mm(mm);
@@ -897,10 +928,15 @@ do_execve(const char *name, int argc, const char **argv) {
         unlock_mm(mm);
         return ret;
     }
-    path = argv[0];
+	if (envc != 0)
+		if ((ret = copy_kargv(mm, envc, kenv, env)) != 0) {
+			unlock_mm(mm);
+			return ret;
+		}
+	path = argv[0];
     unlock_mm(mm);
 
-    fs_closeall(current->fs_struct);
+	fs_closeall(current->fs_struct);
 
     /* sysfile_open will check the first argument path, thus we have to use a user-space pointer, and argv[0] may be incorrect */
 
@@ -932,16 +968,18 @@ do_execve(const char *name, int argc, const char **argv) {
     }
     sem_queue_count_inc(current->sem_queue);
 
-    if ((ret = load_icode(fd, argc, kargv)) != 0) {
+    if ((ret = load_icode(fd, argc, kargv, envc, kenv)) != 0) {
         goto execve_exit;
     }
     put_kargv(argc, kargv);
+	put_kargv(envc, kenv);
     de_thread(current);
     set_proc_name(current, local_name);
     return 0;
 
 execve_exit:
     put_kargv(argc, kargv);
+	put_kargv(envc, kenv);
     do_exit(ret);
     panic("already exit: %e.\n", ret);
 }
@@ -1259,7 +1297,7 @@ do_modify_ldt(int func, void* ptr, uint32_t bytecount)
 }
 
 static int
-kernel_execve(const char *name, const char **argv) {
+kernel_execve(const char *name, const char **argv, const char **env) {
     int argc = 0, ret;
     while (argv[argc] != NULL) {
         argc ++;
@@ -1267,16 +1305,17 @@ kernel_execve(const char *name, const char **argv) {
     asm volatile (
         "int %1;"
         : "=a" (ret)
-        : "i" (T_SYSCALL), "0" (SYS_exec), "d" (name), "c" (argc), "b" (argv)
+        : "i" (T_SYSCALL), "0" (SYS_exec), "d" (name), "c" (argc), "b" (argv), "D" (env)
         : "memory");
     return ret;
 }
 
 #define __KERNEL_EXECVE(name, path, ...) ({                         \
             const char *argv[] = {path, ##__VA_ARGS__, NULL};       \
+			const char *env[] = {NULL};								\
             cprintf("kernel_execve: pid = %d, name = \"%s\".\n",    \
                     current->pid, name);                            \
-            kernel_execve(name, argv);                              \
+            kernel_execve(name, argv, env);                         \
         })
 
 #define KERNEL_EXECVE(x, ...)                   __KERNEL_EXECVE(#x, "bin/"#x, ##__VA_ARGS__)

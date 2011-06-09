@@ -118,6 +118,7 @@ int
 runcmd(char *cmd) {
     static char argv0[BUFSIZE];
     const char *argv[EXEC_MAX_ARG_NUM + 1];
+	const char *env[] = {"GOARCH=386", NULL};
     char *t;
     int argc, token, ret, p[2];
 again:
@@ -212,7 +213,7 @@ runit:
         argv[0] = argv0;
     }
     argv[argc] = NULL;
-    return __exec(NULL, argv);
+    return __exec(NULL, argv, env);
 }
 
 int

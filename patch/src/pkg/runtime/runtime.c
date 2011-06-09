@@ -218,14 +218,6 @@ runtime·goenvs_unix(void)
 	os·Envs.cap = n;
 }
 
-void
-runtime·goenvs_ucore(void)
-{
-        os·Envs.array = 0;
-	os·Envs.len = 0;
-	os·Envs.cap = 0;
-}
-
 // Atomic add and return new value.
 uint32
 runtime·xadd(uint32 volatile *val, int32 delta)

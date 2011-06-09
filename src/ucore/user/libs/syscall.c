@@ -55,8 +55,8 @@ sys_wait(int pid, int *store) {
 }
 
 int
-sys_exec(const char *name, int argc, const char **argv) {
-    return syscall(SYS_exec, name, argc, argv);
+sys_exec(const char *name, int argc, const char **argv, const char **env) {
+    return syscall(SYS_exec, name, argc, argv, env);
 }
 
 int

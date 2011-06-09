@@ -150,7 +150,7 @@ runtime·osinit(void)
 void
 runtime·goenvs(void)
 {
-	runtime·goenvs_ucore();
+	runtime·goenvs_unix();
 }
 
 // Called to initialize a new m (including the bootstrap m).
