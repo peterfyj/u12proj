@@ -1,7 +1,6 @@
 OTHER=" 235\
 		64bit\
 		append\
-		args\
 		bigalg\
 		bigmap\
 		blank\

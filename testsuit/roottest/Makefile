@@ -5,7 +5,7 @@ ECHO := echo
 V := @
 SHELL := sh
 
-all: cmplxdivide ddd3 others
+all: args cmplxdivide ddd3 others
 
 cmplxdivide:
 	$(V)$(ECHO) [Testsuit] cmplxdivide.go
@@ -19,6 +19,12 @@ ddd3:
 	$(V)$(COMP) ddd3.go
 	$(V)$(LINK) -o ddd3.out ddd3.8
 	$(V)$(ECHO) "./ddd3.out" >> testall.sh
+	
+args:
+	$(V)$(ECHO) [Testsuit] args.go
+	$(V)$(COMP) args.go
+	$(V)$(LINK) -o args.out args.8
+	$(V)$(ECHO) "./args.out arg1 arg2" >> testall.sh
 
 others:
 	$(V)$(SHELL) others.sh
