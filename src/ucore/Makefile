@@ -243,7 +243,7 @@ $(call create_target,ucore.img)
 SWAPIMG		:= $(call totarget,swap.img)
 
 $(SWAPIMG):
-	$(V)dd if=/dev/zero of=$@ bs=1M count=128
+	$(V)dd if=/dev/zero of=$@ bs=1M count=512
 
 $(call create_target,swap.img)
 
@@ -294,7 +294,7 @@ TARGETS: $(TARGETS)
 
 .DEFAULT_GOAL := TARGETS
 
-QEMUOPTS = -hda $(UCOREIMG) -drive file=$(SWAPIMG),media=disk,cache=writeback -drive file=$(FSIMG),media=disk,cache=writeback
+QEMUOPTS = -hda $(UCOREIMG) -drive file=$(SWAPIMG),media=disk,cache=writeback -drive file=$(FSIMG),media=disk,cache=writeback -m 768
 
 .PHONY: qemu qemu-nox debug debug-nox
 qemu: $(UCOREIMG) $(SWAPIMG) $(FSIMG)

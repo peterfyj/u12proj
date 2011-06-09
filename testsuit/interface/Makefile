@@ -5,20 +5,6 @@ ECHO := echo
 V := @
 SHELL := sh
 
-OTHER := "bigdata\
-		  fail\
-		  convert1\
-		  fake\
-		  convert2\
-		  receiver1\
-		  convert\
-		  receiver\
-		  recursive\
-		  returntype\
-		  embed\
-		  struct"
-
-
 all: embed1 others
 
 embed1:

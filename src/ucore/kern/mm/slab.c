@@ -97,7 +97,7 @@ struct kmem_cache_s {
 };
 
 #define MIN_SIZE_ORDER          5           // 32
-#define MAX_SIZE_ORDER          17          // 128k
+#define MAX_SIZE_ORDER          18          // 256k
 #define SLAB_CACHE_NUM          (MAX_SIZE_ORDER - MIN_SIZE_ORDER + 1)
 
 static kmem_cache_t slab_cache[SLAB_CACHE_NUM];

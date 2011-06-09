@@ -19,4 +19,4 @@ tree:
 	$(V)$(ECHO) "./tree.out" >> testall.sh
 	
 clean:
-	$(V)$(RM) -f *.8
+	$(V)$(RM) -f *.8 *.go
