@@ -1,0 +1,279 @@
+%# -*- coding:utf-8 -*-
+\documentclass{article}
+
+\usepackage{fontspec,xunicode}
+\setmainfont{黑体}
+\usepackage[slantfont,boldfont]{xeCJK}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\setCJKmainfont{黑体}
+\usepackage[final,xetex]{graphicx}
+\usepackage{float}
+\usepackage[margin=3.5cm]{geometry}
+\usepackage{listings}
+
+\begin{document}
+
+\lstset { 
+numbers=left,
+numberstyle=\footnotesize,
+numbersep=5pt,
+backgroundcolor=\color{lightgray}
+}
+
+\author{陈睿, 方宇剑}
+\title{Ucore Go Porting实验文档}
+\maketitle
+
+\section{实验目的}
+完成GO到UCORE运行时的移植，使得编译好的GO程序能够在UCORE上运行。
+
+\section{编译ucore-go}
+直接运行根目录的
+\begin{lstlisting}
+demo.sh
+\end{lstlisting}
+等待几分钟（根据机器性能而不同），就能完成所有的编译操作。此后就能直接开启ucore，进行相应的go程序测试了。
+
+demo.sh基本上完成了如下步骤的操作：
+\begin{enumerate}
+  \item 完整编译在Linux上的GO编译器；
+  \item 将Patch替换原有的GO语言相应包，使得GO编译器源代码具有UCORE的运行时；
+  \item 部分编译替换的内容（如runtime、os等）。至此，该GO编译器已经是宿主为Linux，目标为Ucore的交叉编译器；
+  \item 利用编译好的交叉编译器对testsuit内的测试go源程序进行编译。其中如果是编译错误、特殊错误或者是未能通过的测试样例被剔除出来，另行人工处理；
+  \item 将编译好的GO可执行文件拷贝到Ucore系统的相应文件夹，使得这些文件能在Ucore里出现；
+  \item 编译修改过的Ucore系统，以及相应的磁盘文件disk0；
+  \item 启动Ucore系统，可以在磁盘中找到编译好的Go程序并运行了。
+\end{enumerate}
+
+\section{文件修改集}
+由于GO的原有文件需要保留用以进行相应的Linux编译器支持（放在src/go中），因此对GO的更改放在patch文件夹中，而Ucore的更改直接在Ucore上进行，放在src/ucore中。
+
+testsuit包含了以go语言编写的测试集，用以在Ucore上进行测试，测试Go的运行时是否正常。除了一些测试编译时错误、特殊错误和尚未在Ucore实现的特殊机制外，在使用脚本编译时，这些测试会被自动编译。
+
+\subsection{Go相关修改集}
+对于Go的更改分为两种。一种是确实进行了相应的增减，一种是直接从Linux处复制而来。直接从Linux处复制而来的有如下一些文件，其中可能有冗余的文件，亦即删除这些文件也能使得GO正常工作：
+\begin{lstlisting}
+patch/src/pkg/runtime/cgo/ucore_386.c
+patch/src/pkg/runtime/ucore/defs.c
+patch/src/pkg/runtime/ucore/defs1.c
+patch/src/pkg/runtime/ucore/defs2.c
+patch/src/pkg/runtime/ucore/defs_arm.c
+patch/src/pkg/runtime/ucore/signals.h
+\end{lstlisting}
+
+其余的文件，都针对Ucore进行一定的更改工作。
+
+\subsection{Ucore相关修改集}
+
+\begin{lstlisting}
+kern/mm/pmm.c                        // ldt
+kern/mm/pmm.h                        // ldt
+kern/mm/memlayout.h                  // ldt
+kern/process/proc.c                  // ldt mmap exit\_group
+kern/process/proc.h                  // ldt
+kern/mm/vmm.c                        // mmap
+kern/mm/vmm.h                        // mmap
+kern/syscall/syscall.c               // ldt mmap gettime
+kern/syscall/syscall.h               // ldt mmap gettime
+libs/unistd.h
+libs/types.h
+Makefile                             // gcc46
+ucore.lds                            // gcc46
+\end{lstlisting}
+
+\section{实验过程详述}
+
+我们着手进行的第一件事情，就是对Go源代码结构进行分析，以确定我们需要修改的部分。经过分析可以了解到，Go语言的基本支持库作为Go的一个package放在/src/pkg文件夹中，命名为runtime，所有与操作系统相关的基础运行时支持都包含在这一文件夹中。因此，只需要在这一文件夹中进行修改（添加ucore目录），再调整相应工具链，就能完成Go语言在Ucore上的支持。除此之外，我们还发现，出于工程上的考虑，go语言除了runtime之外还有一个原生的syscall接口，允许go语言直接进行系统调用。除此之外，通过搜索，还有os和net两个包中包含c或goc源文件（亦即操作系统相关）。网络层面的支持将暂缓，因此net包中暂时搁置。于是，最终我们敲定更改的包，集中在runtime、syscall和os三个包上。
+
+以下是我们进行大工作详述，大致按照时间顺序排列。
+
+\subsection{建立hg版本控制，调整文件结构}
+为了在两人之间进行统一的版本控制管理，我们决定使用Mercurial来进行管理。因此，第一步就是建立起文件目录结构，并在这上面建立版本控制库。
+
+\subsection{使用gdb在ucore上进行用户态程序的调试}
+由于gdb实现的是在qemu上进行内核态调试的功能，如何在ucore上进行用户态程序的调处，如何让调试器跳过所有内核初始化操作，设置在用户态程序上的断点，是我们需要考虑和探索的问题。最终经过实际测试，将go的可执行文件反汇编的结果，其中的指令地址就是实际执行的地址。因此，将断点设置为这些地址，则可以直接在gdb中进行调试（从来没有出现过断点失败的情况）。因此，我们最终仍然使用与内核态相同的调试方法进行用户态程序调试。
+
+\subsection{在Linux上进行go的ucore交叉编译}
+由于我们的Go编译器仍然需要在Linux上运行，如何实现交叉编译，仍然是我们需要考虑的问题。一开始，我们认为Go似乎自带了交叉编译的支持，只需要修改Makefile就能完成相应的交叉编译器的编译。但是我们最终发现，不仅实现起来需要修改很多的Makefile，其中还有Go特有的Makefile格式，而且Go本身也并没有对交叉编译有一个很清晰的支持，我们还需要想其他的办法来实现交叉编译。
+
+最终，我们从Go的Tiny运行时中得到了灵感。Tiny运行时是运行在裸机上的Go运行时，能够使得Go程序不需要操作系统就能运行起来。因此，对Tiny来说，交叉编译是必须的。他们的做法是，先对Go编译器进行一次全编译，然后将Tiny的相关patch打给源代码，再对更改的部分进行一次部分编译。这样做完以后，编译器就是交叉编译的了。我们依次类推，进行了相应的交叉编译工作。经过测试以后，编译通过，在后面的测试也可以看到，编译的程序是能够在Ucore上正确运行的。
+
+\subsection{建立编译工具链}
+由于每一次的更改都需要对Ucore和Go分别重新编译，并互相进行一些文件拷贝操作，多次进行不仅容易出错，工作量也大。为此，我们分别建立了编译工具链，在各自不同的机器上进行运行。
+
+\subsection{最大化工作集}
+GO的runtime文件中，已经进行了有效的组织。与操作系统无关的源文件被放在runtime文件夹下，而每个操作系统或是系统架构相关的代码放在独立的文件夹下（如386、windows）。但是即便如此，为了确实确认我们需要完成的工作，我们首先将所有的runtime代码过了一遍，理清函数调用链和其中的依赖关系，确认我们的最大工作集是哪些函数。工作集在Wiki上的Week4有详细列表。
+
+\subsection{syscall包的支持}
+如前所述，我们需要对go的syscall包提供相应的系统移植。由于这是一个最原始的系统调用接口，基本上，我们只需要提供系统的调用号就能完成syscall包的编写。
+
+\subsection{分析Hello World程序的需求}
+由于成功编译并运行Hello World程序需要一个最小的运行时支持，是能够运行起来的最简单的程序之一；另一方面又包含了相对完整的运行时支持，例如打印的支持对后续的调试提供便利。因此，使得Hello World在UCore上运行起来成为了我们的第一件工作。为此，我们需要分析Hello World可能需要我们实现的运行时功能。
+
+我们最初认为，实现Hello World只需要实现输出相关的函数。但是经过实际调试发现，在此之前，我们需要完成建立LDT表以及一系列内存进程相关的功能，设置好一个正常Go程序所需的运行环境。由于ldt是我们在单步调试中遇到的第一个功能，因此我们决定在此后首先进行ldt相关的工作尝试。
+
+\subsection{最小化工作集}
+先前的“最大化工作集”主要目的在于最大程度上剥离操作系统相关部分，而最小化工作集则是为了逐步缩小这个范围，从而缩小到我们需要关注并修改的代码。最小化工作集的结果是将我们的工作集定位在三个包上：8l, syscall, runtime。8l的作用是设置最后可执行程序的链接方法，而我们的工作也只是将它简单的设置成ELF32格式。runtime是我们首先需要实现的包，它是整个GO得以运行的基础，也可以认为是第一个默认的m可以运行的基础。在GO的层次结构中，可以将其视为最底层。syscall提供了调用syscall的接口，它是更多上层包的基础。多大数上层包向下接洽都会使用syscall包，比如fmt包专门管理格式输出，它会调用syscall的Write函数来满足最底层的支持。
+
+\subsection{LDT的第一次尝试：建立syscall框架}
+为了设置LDT，我们仿造Linux的做法，在ucore中新增一个modify\_ldt的syscall来实现这一目的。同时，我们也可以进一步熟悉ucore的框架，为未来添加syscall做一定的尝试。最终，我们搭建了一个证明可行的框架，因为根据调试结果来看，系统确实运行到了相应的系统调用中。
+
+\subsection{LDT的第二次尝试：Fake LDT by GDT}
+由于ldt这一概念比较少见，我们很难找到与之相应的实现。在对相关文档做了一定的研究之后，我们提出了两种在ucore上实现ldt的方法：一种是与modify\_ldt一致，使用CPU的lldt指令来装载ldt，这样做能够很好地满足go的需要，但是我们需要重写一套相应的实现，并且引入ldt概念可能会引起ucore中更多的未知错误；另一种是仿造go的tiny实现方法，在gdt中新增一条目，在装载ldt时直接将offset和limit等数据装载到gdt中，达到伪装的目的。这一种方法可能实现起来略显粗糙，但是对现有框架的改动不大，更容易实现。因此，我们最终首先尝试了第二种方法，经过一些调试，Hello World成功通过了setldt阶段。
+
+\subsection{runtime.rt\_sigaction}
+在此之后，Hello World进入rt\_sigaction函数。这是一个与信号设置相关的函数，由于当时ucore并没有相应的signal支持，直接忽略该函数的函数体返回即可。
+
+\subsection{runtime.mmap}
+接下来，Hello World通过一些操作系统无关的控制函数，来到了内存分配的阶段。通过调研Linux的相关实现，我们发现所有的Go语言内存操作都是基于Linux的系统调用mmap来实现了，而这一调用在ucore已经有一个基础的实现。具体来讲，ucore中的mmap并不支持文件映射，但是对于go的runtime来说，这已经够用。因此，我们进行了相应的更改调用号、调整传参顺序的更改。
+
+此外，linux的mmap是返回分配的内存地址，而ucore中是在第一个参数中传入指针的指针进行值的返回，我们也在go的runtime中做了相应的调整。
+
+\subsection{runtime.exit1}
+仿造Linux的exit，我们更改了调用号，调整了传参顺序，实现了相应的ucore版本。
+
+\subsection{runtime.gettime的第一次尝试}
+
+\subsection{runtime.write的第一次尝试：循环putc}
+由于我们对于write的第一次尝试（更改调用号，调正传参顺序）没有成功输出字符，我们便开始考虑其他种write的实现方法。通过ucore的putc系统调用循环输出字符似乎是一个不错的方法，我们也进行了相关实现。这一次，ucore成功地打印出了相应的字符，但是输出字符并不是Hello World。
+
+\subsection{runtime.write的第二次尝试：重定向stderr}
+通过对runtime.write的进一步分析，我们发现原始的printf在调用runtime.write时，会试图通过write向stderr写入字符。如果将其改为stdout会如何？于是我们放弃putc的思路，改回原先的版本，忽略了传入的参数，无论什么情况都向stdout写入。这一次，虽然仍然会在之后出现Page Fault，屏幕上终于出现了正确的Hello World，这是因为ucore还没有stderr的相应逻辑。为了使得runtime.write更加通用，我们添加判断，只将stderr的字符转向stdout输出。runtime.write至此完成。
+
+\subsection{ucore的mmap修改：分配最近空闲内存, 增加新的mmap辅助函数get\_unmapped\_area\_with\_hint}
+实际上，mmap系统调用在Linux上会传入一个地址，但这个地址实际上并不是一个硬性要求，而只是一个“hint”。ucore中获取空闲内存从高地址往前搜索，因此并没有“hint”
+
+\subsection{go的内存运行时：SysMap, SysReserve, SysAlloc, SysFree, SysUnused}
+GO语言提供了完整的原生垃圾回收支持，但是将代码分析之后，可以看到与操作系统相关的函数无外乎以下五种：SysMap, SysReserve, SysAlloc, SysFree和SysUnused。只要完成了这五个函数的正确实现，GO语言的垃圾回收机制、自治堆栈分配等应当都能正确地运行起来。
+
+我们最初根据linux的实现按照我们的理解对mmap的调用进行了修改，使之符合ucore的约定，但是在运行中throw的情况。GO语言的throw通常是因为其自检没有通过，这是为操作系统开发者提供的一种提示方法，能够帮助操作系统移植者进行代码的检查。这些Throw提示我们，Arena的分配不正确。
+
+Arena是GO语言从操作系统处申请预留的地方，在一些情况下出现内存分配的时候，GO会尝试在Arena中开辟内存空间。同时，GO自己维护Arena中的占用情况，在Arena被占满时会提示进行相应处理。但是我们的Throw和一系列printf语句表明，在Arena上分配的内存空间最终并没有在Arena上，该地址实际超出了Arena的范围。
+
+经过对GO语言源代码的一些分析，我们发现，Arena部分的空间是使用SysReserve分配的，而从Arena中分配是通过SysMap分配的。这二者之间究竟有什么区别呢？他们和SysAlloc又有什么联系呢？带着这些问题，我们又看了一遍Linux的实现，终于发现了问题所在。Linux中对于这三种情况的处理，mmap的调用是基本一致的，只有在SysMap中存在着特别的地方。在SysMap中，mmap的调用是带有MAP\_FIXED标记的。这个标记的解释是，无论这块内存是否已经分配，将强制再将这块内存分配给进程。
+
+至此，我们才明白这三种方法之间的联系和区别，这种关系实际上通过名字是可以看出来的。SysAlloc就是最普通的内存分配，没有太大的特殊性。而SysReserve则是保留一块内存区间以待未来取用，SysMap则是在曾经Reserve的空间中进行取用。通过这样两层的方式，我们就可以保证这样一段数据在内存中是线性存放的。虽然说将二者区分开来，有利于在操作系统层面上做相应的优化，但是Linux上只是直接将其进行了分配。
+
+由于ucore中的mmap并没有相应的MAP\_FIXED功能，因此在具体实现上，我们使用了在Reserve时真分配，Map时假分配的方法。只要保证SysMap的地址是正确的（通过GO的上层保证），在SysMap中直接返回就能达到我们的要求。经过相应的更改后，终于通过了这一条throw语句。
+
+\subsection{MAP\_ANON标志清零内存}
+在此之后，我们又遇到了Page Fault的问题。从目前来看，能够通过前面的内存设置检查的throw语句，Page Fault的问题很可能是由指针引起的。果不其然，找到Page Fault处的IP，发现这是一个在取地址时抛出的错误。GO语言支持多层次的内存结构，其中MCache用来分配较小的内存，不需要重新请求内存，提升了性能，而Page Fault正是在MCache\_Alloc中，访问MCache结构指针c的\&c->list[sizeclass]时发生的。经过代码的搜查，发现MCache的list在初始化时（malloc.goc中的runtime.allocmcache），并没有相关置零的操作，在其中添加了相应的操作以后调试通过该Page Fault。
+
+但是，为什么在Linux上的程序没有类似的问题呢？这又涉及到了另一个mmap标志符MAP\_ANON。MAP\_ANON的主要作用，在于表示这一次的mmap不映射任何内存，同时将这段内存清零。因此，只要在SysMap等函数中额外使用memclr做一次清零的工作，就不需要在其他地方修改代码了。
+
+\subsection{添加链接器8l对Ucore的支持}
+
+\subsection{屏蔽环境变量}
+在接下来的调试中，同样的Page Fault问题又再一次出现了。这一次的指令是出现在findnull函数中。这个函数非常简单，提示我们从上一层函数中寻找问题。但是由于GO打印Traceback的相关操作并不是操作系统无关的，我们并没有实现相应的Traceback打印，因此我们不得不进行一次dirty的手工Traceback。基本思路是，在单步过程中，只要跳过某一个函数时发生了Page Fault，就跳进该函数继续递归执行上面的过程。最终我们找到了如下的一个调用链：runtime.goenvs\_unix -> runtime.gostringnocopy -> runtime.findnull。
+
+于是我们意识到，由于Ucore并没有环境变量的支持，在这里寻找相应的字符串，很可能会因为找不到'\\0'而使得指针最终指向一段不被允许的内存空间。于是，将环境变量全部设置为空，系统调试通过。
+
+\subsection{Hello World完成！}
+在完成上述工作之后，就可以在ucore上正常地运行Hello World了！接下来的工作，就是测试更多的go程序，尤其是并行方面和内存方面需求较大的程序，一方面以此为指向不断完善runtime的功能支持（如gettime、clone、lock/unlock的支持），另一方面，通过这些测试来发现之前工作中潜在的漏洞。
+
+\subsection{tls\_offset调整}
+tls\_offset在ucore上与linux不同，因此在设置g和m时GO会throw报错。g和m是go用来进行线程管理的两个结构体，每个线程都有对应的g和m，后面会有详细的阐释。设置LDT，就是为了建立起TLS，存放g和m这两个结构体的指针。根据go的mkasmh.sh的描述，为了和pthread库一致，8l连接器做了一定的调整，这要求不同的操作系统根据实际情况选择g和m的偏移地址（有的直接放在TLS基地址，有的放在TLS-4的位置）。此后，GO会对其做一次存取检查，以确保TLS的正确建立，否则将throw一个异常。
+
+由于地址是通过8l调整的，因此只要让8l不进行这个调整，ucore就可以不进行额外的调整而正常运行。上面链接器已经做了相应的调整，因此g和m已经能够进行正常的存取了。在TLS建立起来以后，多线程的程序才有了可能性，我们进一步的工作也就成为了可能。
+
+\subsection{runtime.gettime的第二次尝试：添加系统调用}
+
+\subsection{完善syscall包, 添加os包实现}
+在runtime的工作告一段落之后，我们开始对syscall和os进行完善。我们将新的syscall加入了syscall包，进行一定的校正。此外，通过对os包的调研，我们发现在ucore系统上，并没有太多我们需要完成的工作，只需要将linux的相应实现复制一份即可。
+
+\subsection{合并编译工具链}
+在之前的工作中，我们很早开始使用自动化脚本对整个编译进行控制。自动化脚本可以重新部分编译go的runtime，重新编译ucore，将二者整合起来，再编译HelloWorld放到。最早是一人使用Python脚本，一人使用Bash脚本各自使用各自的工具链。然而，随着版本控制push和pull越来越频繁，建立统一的工具链变得更有必要了。因此，我们经过讨论决定，对Bash脚本做了一定的调整，使之通用化，使得两个人之间能够达成一致。
+
+\subsection{添加测试集：着手并行程序实现}
+我们挑选了几个go中与goroutine、channel等并行特性相关的go测试源文件，通过测试它们在ucore上的运行情况，对运行时进行调试。这些文件有：
+
+
+\subsection{runtime.gettime的第三次尝试}
+
+\subsection{clone的实现}
+原有Linux的clone基本上只需要更改调用号、调整参数顺序就能实现，外加上正确的gettime就基本上能够正常工作。但是clone中间还用到了一个get\_tid的方法，这个方法的作用是在clone出新的线程以后返回其线程ID，这一线程ID被用来作为LDT表项的编号（如ID为1的线程对应第7条LDT表项，ID为2的线程对应第8条LDT表项）。在ucore中，没有相应的gettid系统调用，直接调用getpid既能正常工作。但是这同时也带来一个问题，一旦线程数量多了，LDT表项也随之增加，这是我们在单线程程序中没有考虑过的问题。
+
+\subsection{lock/unlock的第一次尝试：Semaphore替代Futex}
+进入了并行程序的调试阶段，我们开始需要实现Lock与Unlock的相应功能。在Linux中，这一部分的功能是使用了Linux的系统调用futex来实现的。futex是一种高性能的内存锁，能够有效地提升并行程序的性能。然而在ucore中，我们并没有futex的相关实现。考虑到futex实现复杂，涉及到内存、进程等诸多模块，我们最终决定参照其他操作系统的做法，使用ucore已经实现了的semaphore来进行lock与unlock的实现。为此，我们参照了darwin系统的相关实现。具体来讲，就是通过一个从0到1、从1到0的semaphore来模拟锁的过程。但是在实现完成后，一旦运行相应的程序，ucore会重新启动。经过一番排查，我们发现，在go的一个线程调度算法中，在切换线程后，程序的指针跳转到了系统启动的地方。这导致了ucore的重启，进一步原因仍然有待查明。
+
+\subsection{sleep实现}
+
+\subsection{究竟有几个线程？GO的线程机制goroutine探究}
+Go语言的并行模型是通过一种新型的goroutine来实现的，每一个goroutine都是一个函数，代表了类似过去线程的概念，从而达到并行执行的效果。在对测试样例的实验中我们发现，即使开了很多的goroutine，在没有更改过clone和lock/unlock的情况下，程序也能正常执行（例如每个goroutine打印一个素数）。最后我们发现，在这种情况下，程序实际上根本没有向操作系统要求更多的线程，而是完全串行化处理的。为什么程序并没有并行化？虽然这个程序前后有依赖的要求，难道go中包含了什么机制来判断是否需要新开线程吗？
+
+带着这种疑问，我们用上了刚刚实现的sleep函数。这一回，程序确实由于调用了不正确的clone和lock/unlock而导致了崩溃。由于sleep函数使得线程之间的顺序关系出现了变化，因此程序不再是串行化的，也就有了新开线程的必要。
+
+经过一番资料的调研，我们了解到，go的线程实际上包含了两层的模型，也就是之前提到过的g和m。一个m结构描述了一个操作系统层面的线程，由操作系统管理；而一个g结构描述了一个go语言层面的轻量级线程，由go自行管理。每一个g对应了一个m，而一个m可能对应很多g。当系统发现现有的m不能满足要求时（如内存方面的要求，一个m所能拥有的最大g数量等），就会通过clone来向操作系统申请新的m。这种结构也很好地解释了我们之前所遇到的情况。因此，根据这些调研，在完成了相应的系统调用之后，所有的并行go测试应该都能正常通过。
+
+\subsection{改善工具链1：加入usage信息}
+为了未来能够将工作转移给他人进行，在工具链脚本中加入帮助信息是很有必要的。因此，我们为脚本添加了usage信息，指示用户如何进行部分编译的相关定制化操作。
+
+\subsection{lock/unlock的第二次尝试：不会重启了}
+
+\subsection{进程保存FS和GS寄存器}
+
+\subsection{LDT的第三次尝试：好多好多的GDT}
+如前所述，当出现多个m线程时，调用clone并设置多项LDT条目成为必备的功能，而这些功能在单线程程序中是不存在的。因此，我们必须提供设置多个LDT条目的可能性。由于之前我们使用了在GDT中提供Fake LDT的方法，现在妥协的做法是在GDT中添加多个表项。由于测试程序最大开到3个m线程，因此当我们GDT设置到大于3个条目时，就应该能使测试程序正常工作。经过这一过程后，实测测试程序通过。这一方法只是权宜之计，但是证明了我们的clone函数以及一些相关函数能够正常工作，方便我们进一步展开工作。
+
+\subsection{lock/unlock的第三次尝试：修改等待超时}
+
+\subsection{输出混乱，是Ucore的问题吗？println的原子性保证}
+在完成了lock和unlock的相应实现之后，我们遇到了与打印相关的问题。我们的测试程序利用n个goroutine进行n次打印“Hi”，因此当n=5时，屏幕上预期得到“HiHiHiHiHi”的结果，这一点在Linux上得到了验证。可是在Ucore上，使用系统底层的printf，可以得到正确的结果，但是在使用fmt.Println这一函数时，我们得到了“HHHHHiiiii”的结果。一开始我们认为是lock/unlock的问题，但是其他类似素数打印的程序能够正常工作，又让我们疑惑不解。
+
+最终，我们突然意识到，在go语言的逻辑层面，println并没有原子性的保证。底层的printf可能是由操作系统来保证原子性，但是这并不意味着在并行模型下，这一原子性的必须的。因此，虽然在Linux上能够正常输出，但是在Ucore上的不正常输出也并不代表程序的实现错误。如果go希望能得到通用正确的结果，应该使用一个输出锁，在每次打印之前获得该锁，而不是由操作系统来完成相应的职责。
+
+\subsection{exit\_group的第一次尝试：runtime.exit实现}
+
+\subsection{LDT的第四次尝试：完美解决，单个GDT，进（线）程保存独立LDT}
+前面提到我们使用多个GDT条目模拟LDT的方法来测试并行程序，但是如果go程序要求开成千上百个程序的时候，我们原先的方法就力不从心了。为了彻底解决这一问题，我们提出了新的方法。每时每刻，由于只有一个m线程在工作，实际上也就只有一个LDT在工作，那么我们为何不只设置一个GDT表项，在进程切换时将LDT替换进来即可呢？经过相应的尝试，我们发现这一做法能够很好地工作，并可以开启任意数量的线程。同时，由于使用了系统调用modify\_ldt，我们实际上隐藏了Ucore的具体实现，因此在未来利用这一框架替换成LDT也是可能的。
+
+\subsection{改善工具链2：提供测试go功能}
+随着需要测试的go测试集越来越大，提供自动化测试脚本的需求越来越高。为此，我们在原来的工具链脚本中加入了测试的相应功能，实现了一个脚本完成所有功能的效果，并能够进行定制，单独进行某一部分的编译或测试。
+
+\subsection{exit\_group的第二次尝试：从timer\_list中移除proc}
+
+\subsection{GO的测试用例测试}
+
+\subsection{GCC 4.6的UCore编译支持}
+在系统升级到GCC 4.6后，我们意外地发现Ucore不能编译成功了。原因是编译出来的bootblock大于510字节，不能被完整地放到第一扇区中。经过测试，回滚到GCC 4.4是能够正常编译的，但是为了能在未来使用新的编译器，我们还是决定尝试探寻在GCC 4.6上编译Ucore的方法。
+
+经过一番尝试和向同学们询问，我们了解到，新的bootblock多出来的那部分，是由于增加了.eh\_frame所致的。.eh\_frame是用来进行异常处理的相关代码段，在C中并不是必须的，在操作系统的bootblock层面就更没有用处了。GCC 4.4默认不会添加这个代码段，但是到GCC 4.6中情形不一样了。根据同学们的说法，使用strip命令可以将.eh\_frame去掉，实际结果确实如此，但是strip命令同时也将目标文件的所有符号都去掉了，这使得bootblock在切换为保护模式时跳转到了错误的地址，因此编译完成后Ucore不能正常启动。
+
+为了解决这一问题，我们查找了一些相关论坛，最终综合几种方法，决定通过更改链接器脚本来去除.eh\_frame。链接器脚本中定义了链接器进行链接时的操作。我们通过指示链接器不将.eh\_frame链接进来的方法，完成了bootblock的链接。为此，我们修改了Makefile，并添加了独立的链接脚本ucore.lds。经过实际测试，上述方法能够在GCC 4.6上编译UCore成功。
+
+\subsection{有问题的用例}
+nilptr测试集顾名思义，是用来测试go对于不合法指针的正确报错处理的测试集。在实际测试中，这一测试集并没有通过相应的测试。我们注意到，测试要求这些go程序throw出非法地址的异常，而这些异常是通过signal由操作系统传递给go程序的。因此，在signal实现之前，这一测试集还不能正常通过。
+
+同时，由于环境变量没有实现，在环境变量测试时也会出现一些问题。如果为系统设置了相应环境变量，而这些环境变量却不能被读出来，那么这些测试自然会报错。
+
+\section{未来的工作}
+
+\subsection{添加SIGNAL实现}
+虽然没有Signal，Go程序也已经能够很好地在Ucore上运行，但是如果出现需要Ctrl-C结束程序的情况，或者nilptr中指针地址异常的情况，Signal机制能够有效地通知程序相应的异常。因此，未来的工作应当是在Ucore中添加Signal的底层支持，同时按照POSIX标准实现相应的各种Signal情况。
+
+\subsection{添加环境变量支持}
+之前遇到环境变量时，我们直接对其做了屏蔽处理，使得一些Go的测试不能通过。因此，能够在Ucore中实现环境变量的支持，就能够使得Go的支持更加全面。
+
+\subsection{添加syscall: kill}
+
+\subsection{操作系统对GO的并行特性的原生支持}
+虽然Go语言引入了很多新的并行语言特性，如Channel、Goroutine等，但是一旦深入的底层我们就会发现，Go语言实际上在操作系统层面，仍然使用了原有的锁这些并行编程的概念。从现实的角度来讲，这是对现有操作系统的一种妥协，本无可厚非。但是如果想要进一步挖掘Go语言的潜力，我们可以尝试从操作系统层面提供一些例如channel相关的接口，进一步提升go语言的性能。
+
+但是从实现上来讲，这就不仅仅涉及到运行时的一些系统调用的简单问题了，进行原生支持，将会涉及到g和m的更改，涉及到大量源代码的变动。同时，从性能的角度来讲，能够提升多少尚未可知。因此，这样的工作是否值得，仍有待进一步调研。
+
+\section{参考内容}
+
+交叉编译参考了Tiny的方法，实验主要参考了Go的Tiny运行时和Linux运行时，Semaphore部分参考了Darwin系统的Runtime。
+
+\section{致谢}
+实验中向勇老师和陈渝老师提供了很多的帮助（和督促），在此表示感谢；
+
+王乃峥师兄也为我们提供了很多帮助，有一次还特意和我们见面详谈，在此表示感谢；
+
+开发GO语言的×××和×××很热心地回答我们的问题，提供了不少帮助，在此表示感谢。
+
+朱文雷、沈彤、张超等也曾经为我们小组答疑解惑，在此一并感谢。
+
+
+\end{document}
