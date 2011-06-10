@@ -210,8 +210,29 @@ Go语言的并行模型是通过一种新型的goroutine来实现的，每一个
 为了未来能够将工作转移给他人进行，在工具链脚本中加入帮助信息是很有必要的。因此，我们为脚本添加了usage信息，指示用户如何进行部分编译的相关定制化操作。
 
 \subsection{lock/unlock的第二次尝试：不会重启了}
+由于通过排查，我们确实无法找到lock/unlock的问题。因此我们对其重新进行了一次实现，同样参照Darwin的实现。但是这一次，lock/unlock竟然不会重启了。我们对之前的程序进行单步调试，发现当程序运行到某一步，会出现地址平移的情况，本应跳转的正确地址加上了一个相当大的偏移，致使系统跳转到了不正确的地方而重启。我们推测，可能是由于某些基本的操作在第一次的时候编码错误，使得系统重启。
 
 \subsection{进程保存FS和GS寄存器}
+在前面的锁完成以后，我们又遇到了其他的问题。同样是在多个m发生的时候，在切换进程时，go语言会throw报错：bad m->nextg in nextgoroutine。通过查看源代码，我们在proc.c找到了如下代码：
+\begin{lstlisting}{lagnuage=C}
+        m->nextg = nil;
+        m->waitnextg = 1;
+        runtime·noteclear(&m->havenextg);
+        if(runtime·sched.waitstop && runtime·sched.mcpu <= runtime·sched.mcpumax) {
+                runtime·sched.waitstop = 0;
+                runtime·notewakeup(&runtime·sched.stopped);
+        }
+        schedunlock();
+
+        runtime·notesleep(&m->havenextg);
+        if((gp = m->nextg) == nil)
+                runtime·throw("bad m->nextg in nextgoroutine");
+\end{lstlisting}
+可以看到，m->nextg应该指的是一个m线程上下一个要执行的g线程。代码首先将m->nextg置为nil，之后又判断要求其不等于nil，这意味着中间的代码对m->nextg进行了更改，但是中间这些函数并没有修改m的相关代码。经过一番困惑后，我们突然意识到，这意味着这一段代码并不是串行执行的，在中间的noteclear与notewakeup函数与锁有很大的联系，很可能是进行到中间，代码切换到了另外一个进（线）程中，才使得这段代码正常工作。
+
+那么，究竟是什么样的原因，使得切换后的线程m没有正确赋值，或是没有正确切换呢？我们首先想到了lock/unlock的实现正确性。为此，我们额外编写了一个测试semtest5.c，用以模拟go中lock与unlock的全部过程。通过测试我们发现其运行正常，鉴于目前没有看到lock/unlock潜在的问题，并且也通过了go的一些启动自检，我们只能初步认为，问题发生在lock/unlock之外。
+
+就在我们一筹莫展时，对于这段代码的调试又有了新的进展。我们对这段代码进行了大量的调试输出，看到了这样一种情况。假设现在有两个m线程：线程4和线程5。线程5刚刚运行完，正要通过schedule切换到线程4，因此通过noteclear和notewakeup来使得线程5睡着，睡眠中的线程4被唤醒，那么这个时候，所有的工作就应该切换到线程4进行。但是最后在throw的时候，当我们将线程号打印出来的时候，我们发现，这个throw仍然在线程5中发生。这意味着由于某种原因，m结构仍然是线程5的m结构。我们根据这一个现象，最终想到了GS和FS寄存器。最早在通过LDT设置TLS的时候，我们将TLS的段地址放在GS中，而TLS中存放了g和m的指针，这意味着GS决定了取到的g和m内容。接着我们又发现，Ucore处于简洁考虑，在进程切换时并没有切换GS和FS寄存器。这就使得GS仍然是线程5的GS，m也就是线程5的m了。于是，我们在Ucore将GS和FS保存在进程结构中，切换时予以切换，终于调试通过。
 
 \subsection{LDT的第三次尝试：好多好多的GDT}
 如前所述，当出现多个m线程时，调用clone并设置多项LDT条目成为必备的功能，而这些功能在单线程程序中是不存在的。因此，我们必须提供设置多个LDT条目的可能性。由于之前我们使用了在GDT中提供Fake LDT的方法，现在妥协的做法是在GDT中添加多个表项。由于测试程序最大开到3个m线程，因此当我们GDT设置到大于3个条目时，就应该能使测试程序正常工作。经过这一过程后，实测测试程序通过。这一方法只是权宜之计，但是证明了我们的clone函数以及一些相关函数能够正常工作，方便我们进一步展开工作。
